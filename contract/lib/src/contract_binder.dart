@@ -80,8 +80,8 @@ class _ContractBinder<A> extends State<ContractPage<A>>
       contract._context = () => context;
       contract._attachContract();
     }
-    _didChangeAppLifecycle(WidgetsBinding.instance?.lifecycleState == AppLifecycleState.resumed);
-    WidgetsBinding.instance?.addObserver(this);
+    _didChangeAppLifecycle(WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed);
+    WidgetsBinding.instance.addObserver(this);
 
     _init = true;
   }

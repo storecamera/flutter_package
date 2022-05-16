@@ -129,7 +129,7 @@ class MyApp extends StatelessWidget {
 }
 
 class IsCurrentService extends Service {
-
+  void update() => notifyListeners();
 }
 
 class LoginService extends Service {
@@ -588,7 +588,7 @@ class ResultCountNextView extends ContractView<ResultCountNextContract> {
                   'ResultCountNextView',
                 ),
                 ElevatedButton(onPressed: () {
-                  Service.of<IsCurrentService>().notifyListeners();
+                  Service.of<IsCurrentService>().update();
                 }, child: const Text('isCurrent'))
               ],
             ),
