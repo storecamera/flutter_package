@@ -1,9 +1,8 @@
 part of 'contract.dart';
 
 abstract class ContractView<T extends Contract> extends StatelessWidget {
-  ContractView(BuildContext context, {Key? key})
-      : contract = Contract.of<T>(context),
-        super(key: key);
+  ContractView(BuildContext context, {super.key})
+      : contract = Contract.of<T>(context);
 
   final T contract;
 
@@ -41,8 +40,8 @@ class ContractBuilder<T extends Contract> extends StatefulWidget {
   State<ContractBuilder<T>> createState() => _ContractBuilderState<T>();
 }
 
-class _ContractBuilderState<T extends Contract> extends State<ContractBuilder<T>>
-    with _ContractView {
+class _ContractBuilderState<T extends Contract>
+    extends State<ContractBuilder<T>> with _ContractView {
   T? _contract;
 
   @override
@@ -113,7 +112,7 @@ extension _ContractViewExtension on Contract {
   void _attachView() {
     final isAttachView = this.isAttachView;
     _attachViewCount++;
-    if(isAttachView != this.isAttachView) {
+    if (isAttachView != this.isAttachView) {
       didChangeLifeCycle();
     }
   }
@@ -121,7 +120,7 @@ extension _ContractViewExtension on Contract {
   void _detachView() {
     final isAttachView = this.isAttachView;
     _attachViewCount--;
-    if(isAttachView != this.isAttachView) {
+    if (isAttachView != this.isAttachView) {
       didChangeLifeCycle();
     }
   }

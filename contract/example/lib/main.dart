@@ -115,6 +115,7 @@ class MyApp extends StatelessWidget {
 
     // changes on the listenable will cause the router to refresh it's route
     refreshListenable: Service.of<LoginService>(),
+    observers: [ContractObserver.instance]
   );
 
   @override

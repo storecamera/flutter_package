@@ -51,12 +51,17 @@ class _ContractBinder<A> extends State<ContractPage<A>>
   final Map<Type, Contract> _contracts = {};
 
   bool _init = false;
+  bool _initPageState = false;
   bool _isCurrent = false;
   bool _appLifecycle = false;
 
   @override
-  Widget build(BuildContext context) =>
-      _init ? widget.build(context) : Container();
+  Widget build(BuildContext context) => _init
+      ? _ContractBinderInheritedWidget(
+          binder: this,
+          child: widget.build(context),
+        )
+      : Container();
 
   @override
   void initState() {
@@ -88,6 +93,8 @@ class _ContractBinder<A> extends State<ContractPage<A>>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    ContractObserver.instance.removeListener(_contractObserverListener);
     for(final contract in _contracts.values) {
       _disposeContract(contract);
     }
@@ -99,18 +106,10 @@ class _ContractBinder<A> extends State<ContractPage<A>>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_init) {
-      final isCurrent = ModalRoute.of(context)?.isCurrent ?? false;
-      if(isCurrent != _isCurrent) {
-        _isCurrent = isCurrent;
-        for(final contract in _contracts.values) {
-          if(isCurrent) {
-            contract._resumePage();
-          } else {
-            contract._pausePage();
-          }
-        }
-      }
+    if (_init && !_initPageState) {
+      _initPageState = true;
+      _contractObserverListener(ModalRoute.of(context));
+      ContractObserver.instance.addListener(_contractObserverListener);
     }
   }
 
@@ -194,6 +193,32 @@ class _ContractBinder<A> extends State<ContractPage<A>>
       }
     }
   }
+
+  void _contractObserverListener(Route<dynamic>? route) {
+    final isCurrent = route != null
+        ? route.settings == ModalRoute.of(context)?.settings
+        : false;
+    if (isCurrent != _isCurrent) {
+      _isCurrent = isCurrent;
+      for (final contract in _contracts.values) {
+        if (isCurrent) {
+          contract._resumePage();
+        } else {
+          contract._pausePage();
+        }
+      }
+    }
+  }
+}
+
+class _ContractBinderInheritedWidget extends InheritedWidget {
+  final ContractBinder binder;
+
+  const _ContractBinderInheritedWidget(
+      {required this.binder, required super.child});
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
 }
 
 extension _ContractLifecycleExtension on Contract {

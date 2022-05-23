@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'contract_observer.dart';
 import 'exceptions.dart';
 
 part 'contract_binder.dart';
@@ -12,14 +13,7 @@ class Contract extends ChangeNotifier {
     if (context is StatefulElement && context.state is ContractBinder) {
       binder = context.state as ContractBinder;
     } else {
-      binder = context.findAncestorStateOfType<_ContractBinder>();
-      // context.visitAncestorElements((element) {
-      //   if (element is StatefulElement && element.state is ContractBinder) {
-      //     binder = (element.state as ContractBinder);
-      //     return false;
-      //   }
-      //   return true;
-      // });
+      binder = context.dependOnInheritedWidgetOfExactType<_ContractBinderInheritedWidget>()?.binder;
     }
     if (binder != null) {
       return binder;
