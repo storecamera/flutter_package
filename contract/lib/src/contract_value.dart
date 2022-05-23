@@ -1,24 +1,24 @@
 import 'package:flutter/widgets.dart';
 
-enum ContractSnapshotState {
+enum ContractValueState {
   waiting,
   active,
   disposed,
 }
 
-class ContractSnapshot<T> extends ChangeNotifier {
-  ContractSnapshotState _state;
+class ContractValue<T> extends ChangeNotifier {
+  ContractValueState _state;
   T? _value;
   Object? _error;
 
-  ContractSnapshot({T? value, Object? error})
+  ContractValue({T? value, Object? error})
       : _value = value,
         _error = error,
         _state = value != null
-            ? ContractSnapshotState.active
-            : ContractSnapshotState.waiting;
+            ? ContractValueState.active
+            : ContractValueState.waiting;
 
-  ContractSnapshotState get state => _state;
+  ContractValueState get state => _state;
 
   bool get hasValue => _value != null;
 
@@ -32,21 +32,21 @@ class ContractSnapshot<T> extends ChangeNotifier {
   }
 
   set value(T value) {
-    if (state == ContractSnapshotState.disposed) {
+    if (state == ContractValueState.disposed) {
       throw StateError('error is not set because ConnectionState is disposed');
     }
     _value = value;
     _error = null;
-    _state = ContractSnapshotState.active;
+    _state = ContractValueState.active;
     notifyListeners();
   }
 
-  void waiting() => state == ContractSnapshotState.waiting;
+  void waiting() => state == ContractValueState.waiting;
 
   Object? get error => _error;
 
   set error(Object? error) {
-    if (state == ContractSnapshotState.disposed) {
+    if (state == ContractValueState.disposed) {
       throw StateError('error is not set because ConnectionState is disposed');
     }
     _error = error;
@@ -57,23 +57,23 @@ class ContractSnapshot<T> extends ChangeNotifier {
   void dispose() {
     super.dispose();
 
-    _state = ContractSnapshotState.disposed;
+    _state = ContractValueState.disposed;
   }
 }
 
-typedef ContractSnapshotWidgetBuilder<T> = Widget Function(BuildContext context, ContractSnapshot<T> snapshot);
+typedef ContractValueWidgetBuilder<T> = Widget Function(BuildContext context, ContractValue<T> snapshot);
 
-class ContractSnapshotBuilder<T> extends StatefulWidget {
-  final ContractSnapshot<T> snapshot;
-  final ContractSnapshotWidgetBuilder<T> builder;
+class ContractValueBuilder<T> extends StatefulWidget {
+  final ContractValue<T> snapshot;
+  final ContractValueWidgetBuilder<T> builder;
 
-  const ContractSnapshotBuilder({super.key, required this.snapshot, required this.builder});
+  const ContractValueBuilder({super.key, required this.snapshot, required this.builder});
 
   @override
-  State<ContractSnapshotBuilder<T>> createState() => _ContractSnapshotBuilderState<T>();
+  State<ContractValueBuilder<T>> createState() => _ContractValueBuilderState<T>();
 }
 
-class _ContractSnapshotBuilderState<T> extends State<ContractSnapshotBuilder<T>> {
+class _ContractValueBuilderState<T> extends State<ContractValueBuilder<T>> {
 
   @override
   void initState() {
@@ -88,7 +88,7 @@ class _ContractSnapshotBuilderState<T> extends State<ContractSnapshotBuilder<T>>
   }
 
   @override
-  void didUpdateWidget(covariant ContractSnapshotBuilder<T> oldWidget) {
+  void didUpdateWidget(covariant ContractValueBuilder<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (widget.snapshot != oldWidget.snapshot) {
