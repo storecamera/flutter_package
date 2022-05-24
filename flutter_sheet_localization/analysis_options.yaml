@@ -1,17 +1,14 @@
-include: package:lints/recommended.yaml
+include: package:flutter_lints/flutter.yaml
 
-linter:
-  rules:
-    omit_local_variable_types: false
-    file_names: true
-    type_annotate_public_apis: true
-    prefer_relative_imports: true
-    directives_ordering: true
-    # public_member_api_docs: false%
 analyzer:
-  errors:
-    undefined_prefixed_name: ignore
-    invalid_annotation_target: ignore
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
+  errors:
+    invalid_annotation_target: ignore
+
+linter:
+  rules:
+    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
+    prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    constant_identifier_names: false
