@@ -6,10 +6,11 @@ enum ContractValueState {
   disposed,
 }
 
-class ContractValue<T> extends ChangeNotifier {
+class ContractValue<T> {
   ContractValueState _state;
   T? _value;
   Object? _error;
+  final subscriptions = <ContractValueSubscription>[];
 
   ContractValue({T? value, Object? error})
       : _value = value,
@@ -33,7 +34,7 @@ class ContractValue<T> extends ChangeNotifier {
 
   set value(T value) {
     if (state == ContractValueState.disposed) {
-      throw StateError('error is not set because ConnectionState is disposed');
+      throw StateError('value is not set because ConnectionState is disposed');
     }
     _value = value;
     _error = null;
@@ -53,11 +54,67 @@ class ContractValue<T> extends ChangeNotifier {
     notifyListeners();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  void notifyListeners() {
+    if (state == ContractValueState.disposed) {
+      throw StateError(
+          'notifyListeners is not set because ConnectionState is disposed');
+    }
+    for (final subscription in subscriptions) {
+      subscription._onData?.call(this);
+    }
+  }
 
+  void dispose() {
+    if (state == ContractValueState.disposed) {
+      throw StateError('dispose is not set because ConnectionState is disposed');
+    }
     _state = ContractValueState.disposed;
+    for(final subscription in subscriptions) {
+      subscription._onData = null;
+      subscription._dispose = null;
+    }
+    subscriptions.clear();
+  }
+
+  ContractValueSubscription<T> listen(
+      ContractValueSubscriptionListener<T> onData) {
+    if (state == ContractValueState.disposed) {
+      throw StateError('listen is not set because ConnectionState is disposed');
+    }
+    final subscription = ContractValueSubscription<T>(
+        onData: onData,
+        dispose: (_) {
+          subscriptions.remove(_);
+        });
+    subscriptions.add(subscription);
+    if (_state == ContractValueState.active) {
+      subscription._onData?.call(this);
+    }
+
+    return subscription;
+  }
+}
+
+typedef ContractValueSubscriptionListener<T> = void Function(
+    ContractValue<T> value);
+
+typedef ContractValueDispose<T> = void Function(
+    ContractValueSubscription<T> subscription);
+
+class ContractValueSubscription<T> {
+  ContractValueSubscriptionListener<T>? _onData;
+  ContractValueDispose<T>? _dispose;
+
+  ContractValueSubscription(
+      {required ContractValueSubscriptionListener<T> onData,
+        required ContractValueDispose<T> dispose})
+      : _onData = onData,
+        _dispose = dispose;
+
+  void dispose() {
+    _onData = null;
+    _dispose?.call(this);
+    _dispose = null;
   }
 }
 
@@ -77,15 +134,20 @@ class ContractValueBuilder<T> extends StatefulWidget {
 }
 
 class _ContractValueBuilderState<T> extends State<ContractValueBuilder<T>> {
+
+  ContractValueSubscription<T>? subscription;
+
   @override
   void initState() {
     super.initState();
-    widget.value.addListener(_didChangedSnapshot);
+    subscription = widget.value.listen((value) {
+      _didChangedSnapshot();
+    });
   }
 
   @override
   void dispose() {
-    widget.value.removeListener(_didChangedSnapshot);
+    subscription?.dispose();
     super.dispose();
   }
 
@@ -94,8 +156,10 @@ class _ContractValueBuilderState<T> extends State<ContractValueBuilder<T>> {
     super.didUpdateWidget(oldWidget);
 
     if (widget.value != oldWidget.value) {
-      oldWidget.value.removeListener(_didChangedSnapshot);
-      widget.value.addListener(_didChangedSnapshot);
+      subscription?.dispose();
+      subscription = widget.value.listen((value) {
+        _didChangedSnapshot();
+      });
       _didChangedSnapshot();
     }
   }
