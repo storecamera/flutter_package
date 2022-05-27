@@ -10,7 +10,7 @@ class ContractValue<T> {
   ContractValueState _state;
   T? _value;
   Object? _error;
-  final subscriptions = <ContractValueSubscription>[];
+  final subscriptions = <ContractValueSubscription<T>>[];
 
   ContractValue({T? value, Object? error})
       : _value = value,
