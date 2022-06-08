@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:store_camera_widget/painting/edge_insets.dart';
 
 typedef DatePickerChanged = void Function(DateTime value);
+typedef DatePickerDeleted = void Function();
 typedef DatePickerToString = String Function(DateTime? value);
 
 class DatePickerWidget extends StatefulWidget {
@@ -10,11 +11,13 @@ class DatePickerWidget extends StatefulWidget {
   final String? labelText;
   final String? errorText;
   final String? dateSeparator;
+  final double? maxWidth;
   final bool enabled;
 
   final DateTime? firstDate;
   final DateTime? lastDate;
   final DatePickerChanged onChanged;
+  final DatePickerDeleted? onDeleted;
   final DatePickerToString? onDateToString;
 
   const DatePickerWidget({
@@ -23,11 +26,13 @@ class DatePickerWidget extends StatefulWidget {
     this.labelText,
     this.errorText,
     this.dateSeparator,
+    this.maxWidth,
     this.enabled = true,
     this.firstDate,
     this.lastDate,
-    required this.onChanged,
     this.onDateToString,
+    required this.onChanged,
+    this.onDeleted,
   });
 
   @override
@@ -69,11 +74,26 @@ class _DatePickerState extends State<DatePickerWidget> {
       readOnly: true,
       enabled: widget.enabled,
       decoration: InputDecoration(
-          contentPadding: const EdgeInsetsDynamic(horizontal: 8, vertical: 4),
+          constraints: widget.maxWidth != null
+              ? BoxConstraints(maxWidth: widget.maxWidth!)
+              : null,
+          contentPadding: EdgeInsetsDynamic(
+              start: 8, end: widget.onDeleted != null ? 0 : 8, vertical: 4),
           labelText: widget.labelText,
-          errorText: widget.errorText,),
+          errorText: widget.errorText,
+          suffix: widget.onDeleted != null
+              ? IconButton(
+                  constraints: const BoxConstraints(
+                    minWidth: 24,
+                    minHeight: 24,
+                  ),
+                  padding: const EdgeInsetsDynamic(start: 4, vertical: 4),
+                  icon: const Icon(Icons.close, size: 16),
+                  onPressed: widget.onDeleted,
+                )
+              : null),
       controller: _controller,
-      textAlign: TextAlign.start,
+      textAlign: TextAlign.center,
       onTap: () async {
         if (widget.enabled) {
           try {
@@ -91,7 +111,7 @@ class _DatePickerState extends State<DatePickerWidget> {
             }
           } catch (e) {
             if (kDebugMode) {
-              print('DateTimePickerWidget upload file error: $e');
+              print('DateTimePickerWidget error: $e');
             }
           }
         }
