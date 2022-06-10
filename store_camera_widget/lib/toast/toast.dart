@@ -1,4 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/widgets.dart';
+import 'package:store_camera_widget/painting/edge_insets.dart';
+
+typedef InitToastTheme = ToastTheme Function(BuildContext context);
 
 class ToastTheme {
   final Duration duration;
@@ -12,6 +17,8 @@ class ToastTheme {
   final Duration animationDuration;
   final Curve animationCurve;
 
+  final TextStyle textStyle;
+
   const ToastTheme({
     this.duration = const Duration(seconds: 3),
     this.useSafeArea = true,
@@ -19,7 +26,8 @@ class ToastTheme {
     this.padding = const EdgeInsets.all(16),
     this.animationType = ToastAnimationType.opacity,
     this.animationDuration = const Duration(milliseconds: 300),
-    this.animationCurve = Curves.easeOutBack
+    this.animationCurve = Curves.easeOutBack,
+    this.textStyle = const TextStyle(),
   });
 
   ToastTheme copyWith({
@@ -30,15 +38,17 @@ class ToastTheme {
     ToastAnimationType? animationType,
     Duration? animationDuration,
     Curve? animationCurve,
+    TextStyle? textStyle,
   }) {
     return ToastTheme(
-        duration: duration ?? this.duration,
-        useSafeArea: useSafeArea ?? this.useSafeArea,
-        alignment: alignment ?? this.alignment,
-        padding: padding ?? this.padding,
-        animationType: animationType ?? this.animationType,
-        animationDuration: animationDuration ?? this.animationDuration,
-        animationCurve: animationCurve ?? this.animationCurve,
+      duration: duration ?? this.duration,
+      useSafeArea: useSafeArea ?? this.useSafeArea,
+      alignment: alignment ?? this.alignment,
+      padding: padding ?? this.padding,
+      animationType: animationType ?? this.animationType,
+      animationDuration: animationDuration ?? this.animationDuration,
+      animationCurve: animationCurve ?? this.animationCurve,
+      textStyle: textStyle ?? this.textStyle,
     );
   }
 }
@@ -51,16 +61,22 @@ enum ToastAnimationType {
   btt, /// bottom to top
 }
 
-class Toasts {
-  static final Toasts instance = Toasts._();
+class Toast {
+  static final Toast instance = Toast._();
 
-  factory Toasts() => instance;
+  factory Toast() => instance;
 
-  Toasts._();
+  Toast._();
 
-  ToastTheme theme = const ToastTheme();
+  ToastTheme? _theme;
+  InitToastTheme? _initToastTheme;
 
-  Toast? toast;
+  void updateToastTheme(InitToastTheme initToastTheme) {
+    _initToastTheme = initToastTheme;
+    _theme = null;
+  }
+
+  _Toast? _toast;
 
   void show(BuildContext context, {
     Duration? duration,
@@ -72,8 +88,10 @@ class Toasts {
     Curve? animationCurve,
     void Function()? onDispose,
     required Widget child}) {
-    toast?.hide();
-    toast = Toast(
+    _theme ??= _initToastTheme?.call(context) ?? const ToastTheme();
+
+    _toast?.hide();
+    _toast = _Toast(
         duration: duration,
         useSafeArea: useSafeArea,
         alignment: alignment,
@@ -83,11 +101,11 @@ class Toasts {
         animationCurve: animationCurve,
         onDispose: onDispose,
         child: child
-    )..show(context);
+    )..show(context, _theme!);
   }
 }
 
-class Toast {
+class _Toast {
   final Duration? duration;
 
   final bool? useSafeArea;
@@ -105,7 +123,7 @@ class Toast {
 
   OverlayEntry? _overlayEntry;
 
-  Toast({
+  _Toast({
     this.duration,
     this.useSafeArea,
     this.alignment,
@@ -117,12 +135,9 @@ class Toast {
     required this.child,
   });
 
-  void show(BuildContext context) {
-    // ignore: prefer_conditional_assignment
+  void show(BuildContext context, ToastTheme theme) {
     if(_overlayEntry == null) {
       _overlayEntry = OverlayEntry(builder: (BuildContext context) {
-        final theme = Toasts.instance.theme;
-
         var useSafeArea = this.useSafeArea ?? theme.useSafeArea;
         var padding = this.padding ?? theme.padding;
 
@@ -142,7 +157,9 @@ class Toast {
           animationType: animationType ?? theme.animationType,
           animationDuration: animationDuration ?? theme.animationDuration,
           animationCurve: animationCurve ?? theme.animationCurve,
-          child: this.child,
+          child: DefaultTextStyle(
+            style: theme.textStyle,
+              child: this.child),
         );
 
         return Align(
@@ -272,6 +289,54 @@ class _ToastOverlayState extends State<_ToastOverlayWidget> with SingleTickerPro
           ),
         );
     }
+  }
+}
+
+class DefaultToastWidget extends StatelessWidget {
+  final Color color;
+  final double startOpacity;
+  final double endOpacity;
+  final double borderOpacity;
+  final double radius;
+  final EdgeInsetsGeometry padding;
+
+  final Widget child;
+
+  const DefaultToastWidget({
+    super.key,
+    this.color = const Color(0xFFFFFFFF),
+    this.startOpacity = 0.9,
+    this.endOpacity = 0.6,
+    this.borderOpacity = 0.2,
+    this.radius = 4,
+    this.padding = const EdgeInsetsDynamic(all: 16),
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+      child: Container(
+        padding: const EdgeInsetsDynamic(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              color.withOpacity(startOpacity),
+              color.withOpacity(endOpacity)
+            ],
+            begin: AlignmentDirectional.topStart,
+            end: AlignmentDirectional.bottomEnd,
+          ),
+          borderRadius: BorderRadius.all(Radius.circular(radius)),
+          border: Border.all(
+            width: 1.5,
+            color: color.withOpacity(borderOpacity),
+          ),
+        ),
+        child: child,
+      ),
+    );
   }
 }
 

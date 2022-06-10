@@ -12,6 +12,7 @@ class DatePickerWidget extends StatefulWidget {
   final String? errorText;
   final String? dateSeparator;
   final double? maxWidth;
+  final TextAlign textAlign;
   final bool enabled;
 
   final DateTime? firstDate;
@@ -27,6 +28,7 @@ class DatePickerWidget extends StatefulWidget {
     this.errorText,
     this.dateSeparator,
     this.maxWidth,
+    this.textAlign = TextAlign.start,
     this.enabled = true,
     this.firstDate,
     this.lastDate,
@@ -41,22 +43,46 @@ class DatePickerWidget extends StatefulWidget {
 
 class _DatePickerState extends State<DatePickerWidget> {
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+  bool _enableClose = false;
 
   void _setDateTimeToController(DateTime? dateTime) {
     _controller.text =
         widget.onDateToString?.call(dateTime) ?? dateTime?.toString() ?? '';
+    _textChange();
   }
 
   @override
   void initState() {
     super.initState();
     _setDateTimeToController(widget.value);
+    _controller.addListener(_textChange);
+    _focusNode.addListener(_unFocus);
+
+    _enableClose = _controller.text.isNotEmpty;
   }
 
   @override
   void dispose() {
+    _controller.removeListener(_textChange);
     _controller.dispose();
+    _focusNode.removeListener(_unFocus);
     super.dispose();
+  }
+
+  void _unFocus() {
+    if(_focusNode.hasFocus) {
+      _focusNode.unfocus();
+    }
+  }
+
+  void _textChange() {
+    bool enableClose = _controller.text.isNotEmpty;
+    if (_enableClose != enableClose) {
+      setState(() {
+        _enableClose = enableClose;
+      });
+    }
   }
 
   @override
@@ -81,19 +107,21 @@ class _DatePickerState extends State<DatePickerWidget> {
               start: 8, end: widget.onDeleted != null ? 0 : 8, vertical: 4),
           labelText: widget.labelText,
           errorText: widget.errorText,
-          suffix: widget.onDeleted != null
+          suffixIcon: widget.onDeleted == null || !_enableClose ? const Icon(Icons.calendar_month,) : null,
+          suffix: widget.onDeleted != null && _enableClose
               ? IconButton(
                   constraints: const BoxConstraints(
                     minWidth: 24,
                     minHeight: 24,
                   ),
                   padding: const EdgeInsetsDynamic(start: 4, vertical: 4),
-                  icon: const Icon(Icons.close, size: 16),
+                  icon: const Icon(Icons.close, size: 16,),
                   onPressed: widget.onDeleted,
                 )
               : null),
       controller: _controller,
-      textAlign: TextAlign.center,
+      focusNode: _focusNode,
+      textAlign: widget.textAlign,
       onTap: () async {
         if (widget.enabled) {
           try {
