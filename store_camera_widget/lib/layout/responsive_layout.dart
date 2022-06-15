@@ -7,10 +7,10 @@ enum ResponsiveDevice {
   DESKTOP, // ignore: constant_identifier_names
 }
 
-class ResponsiveLayoutConfig {
-  static final ResponsiveLayoutConfig instance = ResponsiveLayoutConfig._();
+class ResponsiveTheme {
+  static final ResponsiveTheme instance = ResponsiveTheme._();
 
-  ResponsiveLayoutConfig._();
+  ResponsiveTheme._();
 
   double _mobile = 650;
   double _tablet = 1100;
@@ -18,42 +18,59 @@ class ResponsiveLayoutConfig {
   void setMobileConstraint(double value) => _mobile = value;
 
   void setTableConstraint(double value) => _tablet = value;
+}
 
-  bool isMobile(double width) => width < _mobile;
+class ResponsiveHelper {
 
-  bool isMobileOf(BuildContext context) =>
+  static double get mobileWidth => ResponsiveTheme.instance._mobile;
+
+  static double get tabletWidth => ResponsiveTheme.instance._tablet;
+
+  static bool isMobile(double width) => width < mobileWidth;
+
+  static bool isMobileOf(BuildContext context) =>
       isMobile(MediaQuery.of(context).size.width);
 
-  bool isTablet(double width) => width < _tablet && width >= _mobile;
+  static bool isTablet(double width) => width < tabletWidth && width >= mobileWidth;
 
-  bool isTabletOf(BuildContext context) =>
+  static bool isTabletOf(BuildContext context) =>
       isTablet(MediaQuery.of(context).size.width);
 
-  bool isDesktop(double width) => width >= _tablet;
+  static bool isDesktop(double width) => width >= tabletWidth;
 
-  bool isDesktopOf(BuildContext context) =>
+  static bool isDesktopOf(BuildContext context) =>
       isDesktop(MediaQuery.of(context).size.width);
 
-  ResponsiveDevice deviceOf(BuildContext context) {
+  static ResponsiveDevice deviceOf(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    if (width < _mobile) {
+    if (width < mobileWidth) {
       return ResponsiveDevice.MOBILE;
-    } else if (width < _tablet) {
+    } else if (width < tabletWidth) {
       return ResponsiveDevice.TABLET;
     } else {
       return ResponsiveDevice.DESKTOP;
     }
   }
 
-  ResponsiveDevice device(double width) {
-    if (width < _mobile) {
+  static ResponsiveDevice device(double width) {
+    if (width < mobileWidth) {
       return ResponsiveDevice.MOBILE;
-    } else if (width < _tablet) {
+    } else if (width < tabletWidth) {
       return ResponsiveDevice.TABLET;
     } else {
       return ResponsiveDevice.DESKTOP;
     }
   }
+
+  static double symmetricPadding(double max, double size) {
+    if (max < size) {
+      return (size - max) / 2;
+    }
+    return 0;
+  }
+
+  static double drawerWidth(BuildContext context) =>
+      DrawerTheme.of(context).width ?? 304;
 }
 
 typedef ResponsiveLayoutWidgetBuilder = Widget Function(
@@ -71,9 +88,7 @@ class ResponsiveLayoutBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return builder(
-            context,
-            ResponsiveLayoutConfig.instance.device(constraints.maxWidth),
+        return builder(context, ResponsiveHelper.device(constraints.maxWidth),
             constraints);
       },
     );
@@ -112,12 +127,8 @@ class MaxWidthLayout extends StatelessWidget {
           horizontal = 0;
         }
 
-        return builder(
-            context,
-            ResponsiveLayoutConfig.instance.device(constraints.maxWidth),
-            constraints,
-            width,
-            horizontal);
+        return builder(context, ResponsiveHelper.device(constraints.maxWidth),
+            constraints, width, horizontal);
       },
     );
   }
