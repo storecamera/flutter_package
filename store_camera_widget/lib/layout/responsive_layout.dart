@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 enum ResponsiveDevice {
@@ -74,6 +75,49 @@ class ResponsiveLayoutBuilder extends StatelessWidget {
             context,
             ResponsiveLayoutConfig.instance.device(constraints.maxWidth),
             constraints);
+      },
+    );
+  }
+}
+
+typedef MaxWidthLayoutBuilder = Widget Function(
+    BuildContext context,
+    ResponsiveDevice device,
+    BoxConstraints constraints,
+    double width,
+    double horizontal);
+
+class MaxWidthLayout extends StatelessWidget {
+  final double maxWidth;
+  final MaxWidthLayoutBuilder builder;
+
+  const MaxWidthLayout({
+    super.key,
+    this.maxWidth = 650,
+    required this.builder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double width;
+        final double horizontal;
+
+        if (maxWidth < constraints.maxWidth) {
+          width = maxWidth;
+          horizontal = (constraints.maxWidth - maxWidth) / 2;
+        } else {
+          width = constraints.maxWidth;
+          horizontal = 0;
+        }
+
+        return builder(
+            context,
+            ResponsiveLayoutConfig.instance.device(constraints.maxWidth),
+            constraints,
+            width,
+            horizontal);
       },
     );
   }
