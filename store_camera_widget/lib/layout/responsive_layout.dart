@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 enum ResponsiveDevice {
   MOBILE, // ignore: constant_identifier_names
@@ -104,11 +103,14 @@ typedef MaxWidthLayoutBuilder = Widget Function(
 
 class MaxWidthLayout extends StatelessWidget {
   final double maxWidth;
+  final double minHorizontal;
+
   final MaxWidthLayoutBuilder builder;
 
   const MaxWidthLayout({
     super.key,
     this.maxWidth = 650,
+    this.minHorizontal = 16,
     required this.builder,
   });
 
@@ -121,10 +123,10 @@ class MaxWidthLayout extends StatelessWidget {
 
         if (maxWidth < constraints.maxWidth) {
           width = maxWidth;
-          horizontal = (constraints.maxWidth - maxWidth) / 2;
+          horizontal = minHorizontal > (constraints.maxWidth - maxWidth) / 2 ? minHorizontal : (constraints.maxWidth - maxWidth) / 2;
         } else {
           width = constraints.maxWidth;
-          horizontal = 0;
+          horizontal = minHorizontal;
         }
 
         return builder(context, ResponsiveHelper.device(constraints.maxWidth),
