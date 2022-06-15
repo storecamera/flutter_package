@@ -42,7 +42,9 @@ class ContractValue<T> {
     notifyListeners();
   }
 
-  void waiting() => state == ContractValueState.waiting;
+  bool get isWaiting => state == ContractValueState.waiting;
+
+  bool get isDisposed => state == ContractValueState.disposed;
 
   Object? get error => _error;
 
