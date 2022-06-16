@@ -1,10 +1,10 @@
 import 'package:contract/src/contract.dart';
 import 'package:flutter/material.dart';
 
-abstract class AppThemeView<T extends Contract> extends ContractView<T> {
+abstract class ContractThemeView<T extends Contract> extends ContractView<T> {
   final ThemeData theme;
 
-  AppThemeView(
+  ContractThemeView(
     super.context, {
     super.key,
   }) : theme = Theme.of(context);
