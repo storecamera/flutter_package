@@ -1,0 +1,38 @@
+name: store_camera_template
+description: A new Flutter package project.
+version: 0.0.1
+homepage:
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  contract:
+    git:
+      url: https://github.com/storecamera/flutter_package.git
+      ref: 594db66171915c75beeda7cc47497253a1e66024
+      path: contract
+  #    path: ../contract
+
+  store_camera_widget:
+    git:
+      url: https://github.com/storecamera/flutter_package.git
+      ref: d46532035cf47eee7ee2448c1ab8d49c9f42c730
+      path: store_camera_widget
+  #    path: ../store_camera_widget
+
+  intl: ^0.17.0
+  rxdart: ^0.27.3
+  go_router: ^3.0.7
+  shared_preferences: ^2.0.15
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.1
+
+flutter:
