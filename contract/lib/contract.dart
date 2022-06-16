@@ -1,6 +1,5 @@
 library contract;
 
-export 'contract_log.dart';
 export 'src/contract.dart';
 export 'src/contract_observer.dart';
 export 'src/contract_value.dart';
