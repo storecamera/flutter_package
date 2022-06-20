@@ -28,8 +28,7 @@ class ScDropdownButton<T> extends StatelessWidget {
           .map((e) => DropdownMenuItem<T>(
         value: e,
         child: Padding(
-          padding:
-          const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: contentPadding,
           child: Text(
             valueToString(e),
             style: e == value
@@ -84,9 +83,17 @@ class ScDropdownFormField<T> extends StatelessWidget {
         maxWidth != null ? BoxConstraints(maxWidth: maxWidth!) : null,
         labelText: labelText,
         errorText: errorText,
-        contentPadding: const EdgeInsetsDynamic(start: 8, vertical: 4),
+        contentPadding: contentPadding,
       ),
       isExpanded: true,
+      selectedItemBuilder: (context) => items.map((e) {
+        final text = valueToString(e);
+        final child = Text(
+          text,
+          style: theme.textTheme.bodyLarge,
+        );
+        return text.isNotEmpty ? FittedBox(child: child) : child;
+      }).toList(),
       items: items.map((e) {
         final text = valueToString(e);
         final child = Text(

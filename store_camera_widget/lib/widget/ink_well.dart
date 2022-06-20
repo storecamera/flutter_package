@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class RoundedRectangleInkWell extends StatelessWidget {
+class InkWellWithShape extends StatelessWidget {
   final Widget child;
   final GestureTapCallback? onTap;
   final GestureTapCallback? onDoubleTap;
@@ -15,11 +15,12 @@ class RoundedRectangleInkWell extends StatelessWidget {
   final Color? highlightColor;
   final Color? splashColor;
   final Color? shadowColor;
-  final BorderRadius? borderRadius;
-  final BorderSide? side;
+
+  final ShapeBorder? shape;
+  final double? elevation;
   final bool inkWellIsTop;
 
-  const RoundedRectangleInkWell({
+  const InkWellWithShape({
     Key? key,
     required this.child,
     this.onTap,
@@ -35,46 +36,33 @@ class RoundedRectangleInkWell extends StatelessWidget {
     this.highlightColor,
     this.splashColor,
     this.shadowColor,
-    this.borderRadius,
-    this.side,
-    this.inkWellIsTop = true,
+    this.shape,
+    this.elevation,
+    this.inkWellIsTop = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return inkWellIsTop
-        ? Stack(
-            children: [
-              _buildChild(child),
-              Positioned.fill(
-                child: _buildInkWell(null),
-              )
-            ],
+    return Material(
+      color: backgroundColor ?? Colors.transparent,
+      shape: shape,
+      clipBehavior: shape != null ? Clip.antiAlias : Clip.none,
+      elevation: elevation ?? 0,
+      child: inkWellIsTop ? Stack(
+        children: [
+          child,
+          Positioned.fill(
+            child: _buildInkWell(null),
           )
-        : _buildInkWell(child);
-  }
-
-  Widget _buildChild(Widget child) {
-    final borderRadius = this.borderRadius;
-    if (borderRadius != null) {
-      return ClipRRect(
-        borderRadius: borderRadius,
-        clipBehavior: Clip.hardEdge,
-        child: child,
-      );
-    }
-    return child;
+        ],
+      ) : _buildInkWell(child),
+    );
   }
 
   Widget _buildInkWell(Widget? child) {
     return Material(
       color: Colors.transparent,
-      shape: side != null
-          ? RoundedRectangleBorder(
-              borderRadius: borderRadius ?? BorderRadius.zero, side: side!)
-          : null,
       child: InkWell(
-        borderRadius: borderRadius,
         onTap: onTap,
         onDoubleTap: onDoubleTap,
         onLongPress: onLongPress,
@@ -86,7 +74,7 @@ class RoundedRectangleInkWell extends StatelessWidget {
         hoverColor: hoverColor,
         highlightColor: highlightColor,
         splashColor: splashColor,
-        child: child != null ? _buildChild(child) : null,
+        child: child,
       ),
     );
   }

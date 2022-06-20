@@ -16,3 +16,5 @@ class EdgeInsetsDynamic extends EdgeInsetsDirectional {
           bottom: bottom ?? (vertical ?? (all ?? 0)),
         );
 }
+
+const EdgeInsetsDynamic contentPadding = EdgeInsetsDynamic(start: 8, vertical: 4);

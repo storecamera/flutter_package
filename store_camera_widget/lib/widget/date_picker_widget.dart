@@ -14,6 +14,8 @@ class DatePickerWidget extends StatefulWidget {
   final double? maxWidth;
   final TextAlign textAlign;
   final bool enabled;
+  final InputDecoration? decoration;
+  final EdgeInsetsGeometry? contentPadding;
 
   final DateTime? firstDate;
   final DateTime? lastDate;
@@ -30,6 +32,8 @@ class DatePickerWidget extends StatefulWidget {
     this.maxWidth,
     this.textAlign = TextAlign.start,
     this.enabled = true,
+    this.decoration,
+    this.contentPadding,
     this.firstDate,
     this.lastDate,
     this.onDateToString,
@@ -99,11 +103,11 @@ class _DatePickerState extends State<DatePickerWidget> {
     return TextFormField(
       readOnly: true,
       enabled: widget.enabled,
-      decoration: InputDecoration(
+      decoration: widget.decoration ?? InputDecoration(
           constraints: widget.maxWidth != null
               ? BoxConstraints(maxWidth: widget.maxWidth!)
               : null,
-          contentPadding: EdgeInsetsDynamic(
+          contentPadding: widget.contentPadding ?? EdgeInsetsDynamic(
               start: 8, end: widget.onDeleted != null ? 0 : 8, vertical: 4),
           labelText: widget.labelText,
           errorText: widget.errorText,

@@ -3,7 +3,19 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:store_camera_widget/painting/edge_insets.dart';
 
-class DialogTheme {}
+class ScDialogTheme {
+  static final ScDialogTheme instance = ScDialogTheme._();
+
+  factory ScDialogTheme() => instance;
+
+  ScDialogTheme._();
+
+  WidgetBuilder loadingBuilder = (context) => Center(
+        child: CircularProgressIndicator(
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      );
+}
 
 Future<dynamic> scAlertDialog(
   BuildContext context, {
@@ -82,8 +94,8 @@ Future<T?> scListSelectDialog<T>(
   String? title,
   T? item,
   required List<T> items,
-  Widget Function(
-          BuildContext context, int index, bool selected, T item, GestureTapCallback onTap)?
+  Widget Function(BuildContext context, int index, bool selected, T item,
+          GestureTapCallback onTap)?
       itemBuilder,
 }) async {
   return await showDialog(
@@ -96,19 +108,17 @@ Future<T?> scListSelectDialog<T>(
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   return (itemBuilder ?? listSelectDialogBuilder<T>).call(
-                      context,
-                      index,
-                      items[index] == item,
-                      items[index],
-                      () {
-                        Navigator.of(context).pop(items[index]);
-                      });
+                      context, index, items[index] == item, items[index], () {
+                    Navigator.of(context).pop(items[index]);
+                  });
                 },
                 itemCount: items.length,
               ),
             ),
             actions: [
-              ScDialogTextAction.cancel(context, onTap: () => null).builder(context,),
+              ScDialogTextAction.cancel(context, onTap: () => null).builder(
+                context,
+              ),
             ],
           ));
 }
