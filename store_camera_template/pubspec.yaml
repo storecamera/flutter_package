@@ -12,18 +12,10 @@ dependencies:
     sdk: flutter
 
   contract:
-    git:
-      url: https://github.com/storecamera/flutter_package.git
-      ref: 594db66171915c75beeda7cc47497253a1e66024
-      path: contract
-  #    path: ../contract
+    path: ../contract
 
   store_camera_widget:
-    git:
-      url: https://github.com/storecamera/flutter_package.git
-      ref: d46532035cf47eee7ee2448c1ab8d49c9f42c730
-      path: store_camera_widget
-  #    path: ../store_camera_widget
+    path: ../store_camera_widget
 
   intl: ^0.17.0
   rxdart: ^0.27.3
