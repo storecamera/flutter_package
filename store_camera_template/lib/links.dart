@@ -36,3 +36,24 @@ extension LinksExtension on Links {
     }
   }
 }
+
+class FadeTransitionPage extends CustomTransitionPage<void> {
+  const FadeTransitionPage({
+    required super.child,
+    super.transitionDuration = const Duration(milliseconds: 300),
+    super.maintainState = true,
+    super.fullscreenDialog = false,
+    super.opaque = true,
+    super.barrierDismissible = false,
+    super.barrierColor,
+    super.barrierLabel,
+    super.key,
+    super.name,
+    super.arguments,
+    super.restorationId,
+  }) : super(transitionsBuilder: fadeTransitionsBuilder);
+
+  static Widget fadeTransitionsBuilder(context, animation, secondaryAnimation,
+      child) =>
+      FadeTransition(opacity: animation, child: child);
+}
