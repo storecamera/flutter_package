@@ -42,6 +42,16 @@ class ContractValue<T> {
     notifyListeners();
   }
 
+  void clear() {
+    if (state == ContractValueState.disposed) {
+      throw StateError('value is not set because ConnectionState is disposed');
+    }
+
+    _value = null;
+    _error = null;
+    _state = ContractValueState.waiting;
+  }
+
   bool get isWaiting => state == ContractValueState.waiting;
 
   bool get isDisposed => state == ContractValueState.disposed;
