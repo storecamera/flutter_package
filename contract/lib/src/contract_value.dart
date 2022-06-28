@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 
 enum ContractValueState {
@@ -86,6 +88,7 @@ class ContractValue<T> {
       subscription._dispose = null;
     }
     subscriptions.clear();
+    _valueStreamSubscription?.cancel();
   }
 
   ContractValueSubscription<T> listen(
@@ -104,6 +107,14 @@ class ContractValue<T> {
     }
 
     return subscription;
+  }
+
+  StreamSubscription<T>? _valueStreamSubscription;
+  void valueFromSteam(Stream<T> stream) {
+    _valueStreamSubscription?.cancel();
+    _valueStreamSubscription = stream.listen((event) {
+      value = event;
+    });
   }
 }
 

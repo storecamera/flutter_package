@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+Color textFieldIconColor(BuildContext context) {
+  switch (Theme.of(context).brightness) {
+    case Brightness.dark:
+      return Colors.white70;
+    case Brightness.light:
+      return Colors.black45;
+  }
+}
+
 class InputDecorationBorderNone extends InputDecoration {
   const InputDecorationBorderNone({
     super.icon,
