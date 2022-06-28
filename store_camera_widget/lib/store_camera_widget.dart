@@ -9,6 +9,7 @@ export 'toast/toast.dart';
 export 'toast/toast_material.dart';
 export 'widget/box.dart';
 export 'widget/date_picker_widget.dart';
+export 'widget/text_field.dart';
 export 'widget/dropdown.dart';
 export 'widget/ink_well.dart';
 export 'widget/out_side_unfocus_tap.dart';
