@@ -15,14 +15,14 @@ dependencies:
   contract:
     git:
       url: https://github.com/storecamera/flutter_package.git
-      ref: d1bb9695f604dd4eb1915627d588d193407a12c0
+      ref: c9308058954131ae614815d4b3cb8e28b9a9219b
       path: contract
 #    path: ../contract
 
   store_camera_widget:
     git:
       url: https://github.com/storecamera/flutter_package.git
-      ref: d1bb9695f604dd4eb1915627d588d193407a12c0
+      ref: c9308058954131ae614815d4b3cb8e28b9a9219b
       path: store_camera_widget
 #    path: ../store_camera_widget
 
