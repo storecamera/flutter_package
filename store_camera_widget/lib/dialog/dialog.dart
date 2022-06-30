@@ -21,14 +21,14 @@ Future<dynamic> scAlertDialog(
   BuildContext context, {
   String? title,
   String? text,
-  Widget? content,
+  WidgetBuilder? contentBuilder,
   List<ScDialogActionBuilder>? actions,
 }) =>
     showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
               title: title != null ? Text(title) : null,
-              content: content ??
+              content: contentBuilder?.call(context) ??
                   ScDialogTextContentWidget(
                     text: text,
                   ),
