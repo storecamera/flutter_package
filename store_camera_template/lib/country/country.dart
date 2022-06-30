@@ -22,9 +22,9 @@ const Map<String, String> languageString = {
 
 const Map<String, String> countryString = {
   'US': 'United States',
-  'CA': '대한민국',
-  'KR': 'Indonesia',
-  'ID': 'Canada',
+  'CA': 'Canada',
+  'KR': '대한민국',
+  'ID': 'Indonesia',
 };
 
 extension LocaleExtension on Locale {
@@ -53,33 +53,29 @@ class CountryFlag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final flag = flags[countryCode?.toUpperCase()];
-    if(flag != null) {
-      if(width != null && height != null) {
-        return Image.asset(
-            flag,
+    if (flag != null) {
+      if (width != null && height != null) {
+        return Image.asset(flag,
             package: 'store_camera_template',
             width: width,
             height: height,
-            fit: boxFit ?? BoxFit.cover
-        );
-      } else if(width != null) {
-        return Image.asset(
-            flag,
+            fit: boxFit ?? BoxFit.cover);
+      } else if (width != null) {
+        return Image.asset(flag,
             package: 'store_camera_template',
             width: width,
-            fit: boxFit ?? BoxFit.fitWidth
-        );
-      } else if(height != null) {
-        return Image.asset(
-            flag,
+            fit: boxFit ?? BoxFit.fitWidth);
+      } else if (height != null) {
+        return Image.asset(flag,
             package: 'store_camera_template',
             width: height,
-            fit: boxFit ?? BoxFit.fitHeight
-        );
+            fit: boxFit ?? BoxFit.fitHeight);
       } else {
         return Image.asset(
-            flag,
-            package: 'store_camera_template',
+          flag,
+          width: 24,
+          package: 'store_camera_template',
+          fit: boxFit ?? BoxFit.fitWidth,
         );
       }
     }
