@@ -12,6 +12,7 @@ export 'widget/date_picker_widget.dart';
 export 'widget/text_field.dart';
 export 'widget/dropdown.dart';
 export 'widget/ink_well.dart';
+export 'widget/image.dart';
 export 'widget/out_side_unfocus_tap.dart';
 export 'widget/sellury_text.dart';
 export 'widget/undefined_scroll_view.dart';
