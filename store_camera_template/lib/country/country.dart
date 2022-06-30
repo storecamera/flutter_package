@@ -14,34 +14,26 @@ const Map<String, String> flags = {
   'ID': 'flags/id.png',
 };
 
-extension LocaleExtension on Locale {
-  String getLanguageString() {
-    switch (languageCode) {
-      case 'en':
-        return 'English';
-      case 'ko':
-        return '한국어';
-      case 'id':
-        return 'bahasa Indonesia';
-      default:
-        return languageCode;
-    }
-  }
+const Map<String, String> languageString = {
+  'en': 'English',
+  'ko': '한국어',
+  'id': 'bahasa Indonesia',
+};
 
-  String getCountryString() {
-    switch(countryCode) {
-      case 'US':
-        return 'United States';
-      case 'KR':
-        return '대한민국';
-      case 'ID':
-        return 'Indonesia';
-      case 'CA':
-        return 'Canada';
-      default:
-        return countryCode ?? '';
-    }
-  }
+const Map<String, String> countryString = {
+  'US': 'United States',
+  'CA': '대한민국',
+  'KR': 'Indonesia',
+  'ID': 'Canada',
+};
+
+extension LocaleExtension on Locale {
+  String getLanguageString() =>
+      languageString[languageCode.toLowerCase()] ?? languageCode;
+
+  String getCountryString() =>
+      countryString[countryCode?.toUpperCase()] ?? countryCode ?? '';
+
   String? getCountryFlagAsset() => flags[countryCode?.toUpperCase()];
 }
 
