@@ -1,11 +1,26 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:flutter/widgets.dart';
 
-const supportedLocale = [
-  Locale('en', 'US'),
-  Locale('en', 'CA'),
-  Locale('ko', 'KR'),
-  Locale('id', 'ID'),
-];
+enum SupportedLocales {
+  KR,
+  ID,
+  US,
+  CA;
+
+  Locale get locale {
+    switch (this) {
+      case SupportedLocales.KR:
+        return const Locale('ko', 'KR');
+      case SupportedLocales.ID:
+        return const Locale('id', 'ID');
+      case SupportedLocales.US:
+        return const Locale('en', 'US');
+      case SupportedLocales.CA:
+        return const Locale('en', 'CA');
+    }
+  }
+}
 
 const Map<String, String> flags = {
   'US': 'flags/us.png',
