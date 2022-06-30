@@ -22,6 +22,8 @@ enum SupportedLocales {
   }
 }
 
+const supportedLanguage = ['en', 'ko', 'id'];
+
 const Map<String, String> flags = {
   'US': 'flags/us.png',
   'CA': 'flags/ca.png',
