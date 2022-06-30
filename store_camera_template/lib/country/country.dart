@@ -2,12 +2,14 @@ import 'package:flutter/widgets.dart';
 
 const supportedLocale = [
   Locale('en', 'US'),
+  Locale('en', 'CA'),
   Locale('ko', 'KR'),
   Locale('id', 'ID'),
 ];
 
 const Map<String, String> flags = {
   'US': 'flags/us.png',
+  'CA': 'flags/ca.png',
   'KR': 'flags/kr.png',
   'ID': 'flags/id.png',
 };
@@ -26,6 +28,20 @@ extension LocaleExtension on Locale {
     }
   }
 
+  String getCountryString() {
+    switch(countryCode) {
+      case 'US':
+        return 'United States';
+      case 'KR':
+        return '대한민국';
+      case 'ID':
+        return 'Indonesia';
+      case 'CA':
+        return 'Canada';
+      default:
+        return countryCode ?? '';
+    }
+  }
   String? getCountryFlagAsset() => flags[countryCode?.toUpperCase()];
 }
 
