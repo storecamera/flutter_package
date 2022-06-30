@@ -13,9 +13,9 @@ class ImageUrlWidget extends StatelessWidget {
   final Widget? error;
   final Color? errorColor;
 
-  const ImageUrlWidget({
+  const ImageUrlWidget(
+    this.url, {
     super.key,
-    this.url,
     this.width,
     this.height,
     this.size,
