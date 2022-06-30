@@ -19,9 +19,11 @@ class StorageService {
     return null;
   }
 
-  static Reference? refFromURL(String url) {
+  static Reference? refFromURL(String? url) {
     try {
-      return FirebaseStorage.instance.refFromURL(url);
+      if(url != null) {
+        return FirebaseStorage.instance.refFromURL(url);
+      }
     } catch (_) {}
     return null;
   }

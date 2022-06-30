@@ -5,6 +5,10 @@ extension DateTimeExtention on DateTime {
   String format_yyyyMMddHHdd([String divider = '.']) =>
       DateFormat('yyyy${divider}MM${divider}dd HH:mm').format(this);
 
+  // ignore: non_constant_identifier_names
+  String format_yyyyMMdd([String divider = '.']) =>
+      DateFormat('yyyy${divider}MM${divider}dd').format(this);
+
   DateTime subtractMonths(int value) {
     var y = value ~/ 12;
     var m = value - y * 12;
