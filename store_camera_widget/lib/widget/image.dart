@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:store_camera_widget/painting/edge_insets.dart';
 
 class ImageUrlWidget extends StatelessWidget {
   final String? url;
