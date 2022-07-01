@@ -13,7 +13,14 @@ class Contract extends ChangeNotifier {
     if (context is StatefulElement && context.state is ContractBinder) {
       binder = context.state as ContractBinder;
     } else {
-      binder = context.dependOnInheritedWidgetOfExactType<_ContractBinderInheritedWidget>()?.binder;
+      // binder = context.dependOnInheritedWidgetOfExactType<_ContractBinderInheritedWidget>()?.binder;
+      final widget = context
+          .getElementForInheritedWidgetOfExactType<
+          _ContractBinderInheritedWidget>()
+          ?.widget;
+      if (widget is _ContractBinderInheritedWidget) {
+        binder = widget.binder;
+      }
     }
     if (binder != null) {
       return binder;
