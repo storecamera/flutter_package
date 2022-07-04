@@ -161,7 +161,11 @@ class ScDialogTextAction extends ScDialogActionBuilder {
                   ),
                   onPressed: enabled
                       ? () async {
-                          Navigator.of(context).pop(await onTap?.call());
+                          final result = await onTap?.call();
+                          if(result != null) {
+                            // ignore: use_build_context_synchronously
+                            Navigator.of(context).pop(await onTap?.call());
+                          }
                         }
                       : null,
                   child:
