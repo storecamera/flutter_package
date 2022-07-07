@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:store_camera_widget/dialog/dialog.dart';
 import 'package:store_camera_widget/painting/edge_insets.dart';
 
 typedef AppDropdownChanged<T> = void Function(T value);
@@ -112,6 +113,102 @@ class ScDropdownFormField<T> extends StatelessWidget {
           ? (_) {
         if (_ != null && _ != value) {
           onChanged.call(_);
+        }
+      }
+          : null,
+    );
+  }
+}
+
+class ScDropdownFormFieldOtherString extends StatelessWidget {
+  final String? value;
+  final double? maxWidth;
+  final String? labelText;
+  final String? errorText;
+  final bool enabled;
+  final List<String> items;
+  final String otherItem;
+
+  final Future<dynamic> Function(BuildContext context, String value)?
+  onOtherValue;
+  final void Function(String value) onChanged;
+
+  const ScDropdownFormFieldOtherString({
+    super.key,
+    this.value,
+    this.maxWidth,
+    this.labelText,
+    this.errorText,
+    this.enabled = true,
+    required this.items,
+    required this.otherItem,
+    this.onOtherValue,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final value = this.value != null && this.items.contains(this.value)
+        ? this.value
+        : otherItem;
+    final items = [...this.items, otherItem];
+
+    return DropdownButtonFormField<String>(
+      value: value,
+      decoration: InputDecoration(
+        constraints:
+        maxWidth != null ? BoxConstraints(maxWidth: maxWidth!) : null,
+        labelText: labelText,
+        errorText: errorText,
+        contentPadding: contentPadding,
+      ),
+      isExpanded: true,
+      selectedItemBuilder: (context) => items.map((e) {
+        final text = e == otherItem ? this.value ?? '' : e;
+        final child = Text(
+          text,
+          style: theme.textTheme.bodyLarge,
+        );
+        return text.isNotEmpty ? FittedBox(child: child) : child;
+      }).toList(),
+      items: items.map((e) {
+        final child = Text(
+          e,
+          style: e == value
+              ? theme.textTheme.bodyLarge
+              ?.copyWith(color: theme.colorScheme.primary)
+              : theme.textTheme.bodyLarge,
+        );
+        return DropdownMenuItem<String>(
+          value: e,
+          child: e.isNotEmpty ? FittedBox(child: child) : child,
+        );
+      }).toList(),
+      onChanged: enabled
+          ? (_) async {
+        if (_ == null) {
+          return;
+        }
+        String changedValue = _;
+        if (changedValue == otherItem) {
+          if (onOtherValue != null) {
+            final result =
+            await onOtherValue!.call(context, this.value ?? '');
+            if (result is String) {
+              changedValue = result;
+            }
+          } else {
+            final result = await scSingleTextEditDialog(context,
+                title: labelText, initText: this.value);
+            if (result is String) {
+              changedValue = result;
+            }
+          }
+        }
+
+        if (changedValue.isNotEmpty && changedValue != this.value) {
+          onChanged(changedValue);
         }
       }
           : null,
