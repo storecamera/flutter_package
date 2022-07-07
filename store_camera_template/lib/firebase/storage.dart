@@ -12,6 +12,16 @@ class StorageService {
       ? FirebaseStorage.instanceFor(bucket: bucket)
       : FirebaseStorage.instance;
 
+  static String? getName(String name) {
+    try {
+      final lastIndex = name.lastIndexOf(".");
+      if (lastIndex > 0) {
+        return name.substring(0, lastIndex);
+      }
+    } catch (_) {}
+    return null;
+  }
+
   static String? getExtension(String name) {
     try {
       return name.split('.').last;
@@ -21,7 +31,7 @@ class StorageService {
 
   static Reference? refFromURL(String? url) {
     try {
-      if(url != null) {
+      if (url != null) {
         return FirebaseStorage.instance.refFromURL(url);
       }
     } catch (_) {}
@@ -57,13 +67,31 @@ class StorageService {
     return bytes;
   }
 
-  static UploadTask uploadFile(Uint8List bytes, String path,
-      {String? bucket, String? name, String? extension, String? mimeType}) {
-    String fileName = name ?? const Uuid().v4();
-    String fileExtension = extension != null ? '.$extension' : '';
+  static Future<TaskSnapshot> uploadFile(Uint8List bytes, String path,
+      {String? bucket,
+      String? name,
+      String? extension,
+      String? mimeType}) async {
+    String fName = name ?? const Uuid().v4();
+    String fExtension = extension != null ? '.$extension' : '';
 
-    return StorageService.firebaseStorage(bucket)
-        .ref('$path/$fileName$fileExtension')
+    String fileName = '$fName$fExtension';
+
+    try {
+      int count = 1;
+      final fn = getName(fileName);
+      final fe = getExtension(fileName);
+      while (true) {
+        await StorageService.firebaseStorage(bucket)
+            .ref('$path/$fileName')
+            .getDownloadURL();
+        fileName = '${fn}_$count${fe != null ? '.$fe' : ''}';
+        count++;
+      }
+    } catch (_) {}
+
+    return await StorageService.firebaseStorage(bucket)
+        .ref('$path/$fileName')
         .putData(bytes,
             mimeType != null ? SettableMetadata(contentType: mimeType) : null);
   }
