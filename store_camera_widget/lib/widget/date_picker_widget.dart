@@ -10,7 +10,6 @@ class DatePickerWidget extends StatefulWidget {
   final DateTime? value;
   final String? labelText;
   final String? errorText;
-  final String? dateSeparator;
   final double? maxWidth;
   final TextAlign textAlign;
   final bool enabled;
@@ -28,7 +27,6 @@ class DatePickerWidget extends StatefulWidget {
     this.value,
     this.labelText,
     this.errorText,
-    this.dateSeparator,
     this.maxWidth,
     this.textAlign = TextAlign.start,
     this.enabled = true,
