@@ -1,10 +1,16 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:contract/contract.dart';
+import 'package:store_camera_widget/toast/toast_material.dart';
 
-mixin ContractSubscription on ChangeNotifier {
+Future<void> Function(BuildContext context, Object error)
+    defaultContractSubscriptionError = (context, _) async {
+  showToast(context, message: _.toString());
+};
+
+mixin ContractSubscription on Contract {
   final _compositeSubscription = CompositeSubscription();
   final _contractLoadingController = ContractLoadingController();
 
@@ -51,12 +57,12 @@ mixin ContractSubscription on ChangeNotifier {
         if (onErrorFunction != null) {
           final result = onErrorFunction(error);
           if (result != null) {
-            showErrorPopup(result);
+            defaultContractSubscriptionError(context, result);
           }
           return;
         }
 
-        showErrorPopup(error);
+        defaultContractSubscriptionError(context, error);
       }, onDone: () {
         hideLoading.call();
         onDone?.call();
@@ -64,65 +70,65 @@ mixin ContractSubscription on ChangeNotifier {
     );
   }
 
-  Future<void> showErrorPopup(Object error) async {
-    // final context = CBContract.instance.contractContext;
-    // if (context != null) {
-    //   if (error is DioError) {
-    //     if(kReleaseMode) {
-    //       return await R.dialog.showTextDialog(
-    //           context: context,
-    //           title: '네트워크 에러가 발생했습니다',
-    //           body: '잠시 후 다시 시도해 주세요',
-    //           buttons: [
-    //             AppDialogTextButtonPositive(
-    //               text: '확인',
-    //             )
-    //           ]);
-    //     } else {
-    //       return await R.dialog.showTextDialog(
-    //           context: context,
-    //           title: error.response?.statusCode?.toString(),
-    //           body: error.response?.data['message']?.toString() ??
-    //               error.response?.statusMessage,
-    //           buttons: [
-    //             AppDialogTextButtonPositive(
-    //               text: '확인',
-    //             )
-    //           ]);
-    //     }
-    //   } else if (error is CBException) {
-    //     return await R.dialog.showTextDialog(
-    //         context: context,
-    //         title: error.title,
-    //         body: error.body,
-    //         buttons: [
-    //           AppDialogTextButtonPositive(
-    //             text: '확인',
-    //           )
-    //         ]);
-    //   } else if (error is CBExceptionType2) {
-    //     return await R.dialog.showTextLine2Dialog(
-    //         context: context,
-    //         title: error.title,
-    //         body: error.body,
-    //         buttons: [
-    //           AppDialogTextButtonPositive(
-    //             text: '확인',
-    //           )
-    //         ]);
-    //   } else {
-    //     return await R.dialog.showTextDialog(
-    //         context: context,
-    //         title: '알수없는 에러가 발생했습니다',
-    //         buttons: [
-    //           AppDialogTextButtonPositive(
-    //             text: '확인',
-    //           )
-    //         ]);
-    //   }
-    // }
-    // return null;
-  }
+  // Future<void> showErrorPopup(Object error) async {
+  //   final context = Contract.of(context);
+  //   if (context != null) {
+  //     if (error is DioError) {
+  //       if(kReleaseMode) {
+  //         return await R.dialog.showTextDialog(
+  //             context: context,
+  //             title: '네트워크 에러가 발생했습니다',
+  //             body: '잠시 후 다시 시도해 주세요',
+  //             buttons: [
+  //               AppDialogTextButtonPositive(
+  //                 text: '확인',
+  //               )
+  //             ]);
+  //       } else {
+  //         return await R.dialog.showTextDialog(
+  //             context: context,
+  //             title: error.response?.statusCode?.toString(),
+  //             body: error.response?.data['message']?.toString() ??
+  //                 error.response?.statusMessage,
+  //             buttons: [
+  //               AppDialogTextButtonPositive(
+  //                 text: '확인',
+  //               )
+  //             ]);
+  //       }
+  //     } else if (error is CBException) {
+  //       return await R.dialog.showTextDialog(
+  //           context: context,
+  //           title: error.title,
+  //           body: error.body,
+  //           buttons: [
+  //             AppDialogTextButtonPositive(
+  //               text: '확인',
+  //             )
+  //           ]);
+  //     } else if (error is CBExceptionType2) {
+  //       return await R.dialog.showTextLine2Dialog(
+  //           context: context,
+  //           title: error.title,
+  //           body: error.body,
+  //           buttons: [
+  //             AppDialogTextButtonPositive(
+  //               text: '확인',
+  //             )
+  //           ]);
+  //     } else {
+  //       return await R.dialog.showTextDialog(
+  //           context: context,
+  //           title: '알수없는 에러가 발생했습니다',
+  //           buttons: [
+  //             AppDialogTextButtonPositive(
+  //               text: '확인',
+  //             )
+  //           ]);
+  //     }
+  //   }
+  //   return null;
+  // }
 
   ContractLoadingController get loadingController => _contractLoadingController;
 
