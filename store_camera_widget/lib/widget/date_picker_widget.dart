@@ -137,7 +137,7 @@ class _DatePickerState extends State<DatePickerWidget> {
             );
 
             if (picked != null) {
-              widget.onChanged(picked.toUtc());
+              widget.onChanged(picked);
             }
           } catch (e) {
             if (kDebugMode) {
