@@ -3,11 +3,18 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:contract/contract.dart';
+import 'package:store_camera_template/exception/exceptions.dart';
 import 'package:store_camera_widget/toast/toast_material.dart';
 
 Future<void> Function(BuildContext context, Object error)
     defaultContractSubscriptionError = (context, _) async {
-  showToast(context, message: _.toString());
+  final String message;
+  if (_ is StoreCameraException) {
+    message = _.message;
+  } else {
+    message = _.toString();
+  }
+  showToast(context, message: message);
 };
 
 mixin ContractSubscription on Contract {
