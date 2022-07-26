@@ -70,14 +70,12 @@ class _ContractBinder<A> extends State<ContractPage<A>>
     try {
       final result = widget.binding.call(context, this, widget.arguments);
       if (result == false) {
-        Navigator.pop(context);
         return;
       }
     } catch (_) {
       if (kDebugMode) {
         print('_ContractBinderWidgetState initState e : $_');
       }
-      Navigator.pop(context);
       return;
     }
 
@@ -106,10 +104,14 @@ class _ContractBinder<A> extends State<ContractPage<A>>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_init && !_initPageState) {
-      _initPageState = true;
-      _contractObserverListener(ModalRoute.of(context));
-      ContractObserver.instance.addListener(_contractObserverListener);
+    if (_init) {
+      if(!_initPageState) {
+        _initPageState = true;
+        _contractObserverListener(ModalRoute.of(context));
+        ContractObserver.instance.addListener(_contractObserverListener);
+      }
+    } else {
+      Navigator.pop(context);
     }
   }
 
