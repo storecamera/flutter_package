@@ -26,7 +26,6 @@ dependencies:
       path: store_camera_widget
 #    path: ../store_camera_widget
 
-  freezed_annotation: ^2.0.3
   intl: ^0.17.0
   rxdart: ^0.27.3
   go_router: ^4.0.0

@@ -14,7 +14,7 @@ class UiImageUtil {
     return c.future;
   }
 
-  static  Future<ui.Image> decodeImageFromPixels(
+  static Future<ui.Image> decodeImageFromPixels(
     int width,
     int height,
     Uint8List pixels, {
