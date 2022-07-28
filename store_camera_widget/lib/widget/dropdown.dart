@@ -9,12 +9,14 @@ class ScDropdownButton<T> extends StatelessWidget {
   final bool enabled;
   final Iterable<T> items;
   final String Function(T) valueToString;
+  final EdgeInsetsGeometry padding;
   final AppDropdownChanged<T> onChanged;
 
   const ScDropdownButton({
     Key? key,
     this.value,
     this.enabled = true,
+    this.padding = contentPadding,
     required this.items,
     required this.valueToString,
     required this.onChanged,
@@ -29,7 +31,7 @@ class ScDropdownButton<T> extends StatelessWidget {
           .map((e) => DropdownMenuItem<T>(
         value: e,
         child: Padding(
-          padding: contentPadding,
+          padding: padding,
           child: Text(
             valueToString(e),
             style: e == value
@@ -57,6 +59,7 @@ class ScDropdownFormField<T> extends StatelessWidget {
   final String? labelText;
   final String? errorText;
   final bool enabled;
+  final EdgeInsetsGeometry padding;
   final Iterable<T> items;
   final String Function(T) valueToString;
   final AppDropdownChanged<T> onChanged;
@@ -67,6 +70,7 @@ class ScDropdownFormField<T> extends StatelessWidget {
     this.maxWidth,
     this.labelText,
     this.errorText,
+    this.padding = contentPadding,
     this.enabled = true,
     required this.items,
     required this.valueToString,
@@ -84,7 +88,7 @@ class ScDropdownFormField<T> extends StatelessWidget {
         maxWidth != null ? BoxConstraints(maxWidth: maxWidth!) : null,
         labelText: labelText,
         errorText: errorText,
-        contentPadding: contentPadding,
+        contentPadding: padding,
       ),
       isExpanded: true,
       selectedItemBuilder: (context) => items.map((e) {
@@ -126,6 +130,7 @@ class ScDropdownFormFieldOtherString extends StatelessWidget {
   final String? labelText;
   final String? errorText;
   final bool enabled;
+  final EdgeInsetsGeometry padding;
   final List<String> items;
   final String otherItem;
 
@@ -140,6 +145,7 @@ class ScDropdownFormFieldOtherString extends StatelessWidget {
     this.labelText,
     this.errorText,
     this.enabled = true,
+    this.padding = contentPadding,
     required this.items,
     required this.otherItem,
     this.onOtherValue,
@@ -161,7 +167,7 @@ class ScDropdownFormFieldOtherString extends StatelessWidget {
         maxWidth != null ? BoxConstraints(maxWidth: maxWidth!) : null,
         labelText: labelText,
         errorText: errorText,
-        contentPadding: contentPadding,
+        contentPadding: padding,
       ),
       isExpanded: true,
       selectedItemBuilder: (context) => items.map((e) {
