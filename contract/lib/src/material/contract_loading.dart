@@ -24,8 +24,8 @@ class ContractLoadingTheme {
 enum _LoadingState { init, lock, loading, hiding }
 
 class ContractLoadingController {
-  final ContractValue<_LoadingState> _loadingValue =
-      ContractValue(value: _LoadingState.init);
+  final ContractNotNull<_LoadingState> _loadingValue =
+      ContractValue.notNull(value: _LoadingState.init);
 
   int _loadingCount = 0;
 
