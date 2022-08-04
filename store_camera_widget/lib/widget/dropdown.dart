@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:store_camera_widget/dialog/dialog.dart';
 import 'package:store_camera_widget/painting/edge_insets.dart';
 
-typedef AppDropdownChanged<T> = void Function(T value);
-
 class ScDropdownButton<T> extends StatelessWidget {
   final T? value;
   final bool enabled;
   final Iterable<T> items;
   final String Function(T) valueToString;
   final EdgeInsetsGeometry padding;
-  final AppDropdownChanged<T> onChanged;
+  final ValueChanged<T> onChanged;
 
   const ScDropdownButton({
     Key? key,
@@ -62,7 +60,7 @@ class ScDropdownFormField<T> extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final Iterable<T> items;
   final String Function(T) valueToString;
-  final AppDropdownChanged<T> onChanged;
+  final ValueChanged<T> onChanged;
 
   const ScDropdownFormField({
     Key? key,
