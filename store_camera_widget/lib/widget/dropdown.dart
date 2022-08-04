@@ -42,7 +42,7 @@ class ScDropdownButton<T> extends StatelessWidget {
           .toList(),
       onChanged: enabled
           ? (_) {
-        if (_ != null && _ != value) {
+        if (_ != null) {
           onChanged.call(_);
         }
       }
@@ -113,7 +113,7 @@ class ScDropdownFormField<T> extends StatelessWidget {
       }).toList(),
       onChanged: enabled
           ? (_) {
-        if (_ != null && _ != value) {
+        if (_ != null) {
           onChanged.call(_);
         }
       }
@@ -211,7 +211,7 @@ class ScDropdownFormFieldOtherString extends StatelessWidget {
           }
         }
 
-        if (changedValue.isNotEmpty && changedValue != this.value) {
+        if (changedValue.isNotEmpty) {
           onChanged(changedValue);
         }
       }
