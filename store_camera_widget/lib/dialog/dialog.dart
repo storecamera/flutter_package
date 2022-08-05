@@ -89,7 +89,7 @@ Widget listSelectDialogBuilder<T>(BuildContext context, int index,
   );
 }
 
-Future<T?> scListSelectDialog<T>(
+Future<dynamic> scListSelectDialog<T>(
   BuildContext context, {
   String? title,
   T? item,
@@ -116,7 +116,7 @@ Future<T?> scListSelectDialog<T>(
               ),
             ),
             actions: [
-              ScDialogTextAction.cancel(context, onTap: () => null).builder(
+              ScDialogTextAction.cancel(context, onTap: () => false).builder(
                 context,
               ),
             ],
@@ -164,7 +164,7 @@ class ScDialogTextAction extends ScDialogActionBuilder {
                           final result = await onTap?.call();
                           if(result != null) {
                             // ignore: use_build_context_synchronously
-                            Navigator.of(context).pop(await onTap?.call());
+                            Navigator.of(context).pop(result);
                           }
                         }
                       : null,

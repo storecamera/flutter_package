@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:contract/contract.dart';
 import 'package:store_camera_template/exception/exceptions.dart';
+import 'package:store_camera_template/log.dart';
 import 'package:store_camera_widget/toast/toast_material.dart';
 
 Future<void> Function(BuildContext context, Object error)
@@ -59,6 +60,7 @@ mixin ContractSubscription on Contract {
       stream.doOnListen(() {
         showLoading.call();
       }).listen(onData, onError: ([error, stackTrace]) {
+        log.i('subscriptionWithLoading onError : ${error.toString()}');
         hideLoading.call();
         final onErrorFunction = onError;
         if (onErrorFunction != null) {
