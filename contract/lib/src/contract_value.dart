@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 enum ContractValueState {
@@ -96,6 +97,9 @@ class ContractValue<T> extends ChangeNotifier {
       _state = ContractValueState.active;
       notifyListeners();
     }, onError: (Object error, [StackTrace? stackTrace]) {
+      if (kDebugMode) {
+        print(error.toString());
+      }
       _error = error;
       notifyListeners();
     });
