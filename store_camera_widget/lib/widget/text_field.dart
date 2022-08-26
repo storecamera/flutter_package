@@ -67,7 +67,7 @@ class InputDecorationBorderNone extends InputDecoration {
 }
 
 class InputDecorationOutlineInputBorder extends InputDecoration {
-  const InputDecorationOutlineInputBorder({
+  InputDecorationOutlineInputBorder({
     super.icon,
     super.iconColor,
     super.label,
@@ -112,14 +112,24 @@ class InputDecorationOutlineInputBorder extends InputDecoration {
     super.semanticCounterText,
     super.alignLabelWithHint,
     super.constraints,
+    Color? errorBorder,
+    Color? focusedBorder,
+    Color? focusedErrorBorder,
+    Color? disabledBorder,
+    Color? enabledBorder,
   }) : super(
     border: const OutlineInputBorder(),
-    enabledBorder: null,
-    focusedBorder: null,
-    disabledBorder: null,
-    errorBorder: null,
-    focusedErrorBorder: null,
+    enabledBorder: colorToOutlineInputBorder(enabledBorder),
+    focusedBorder: colorToOutlineInputBorder(focusedBorder),
+    disabledBorder: colorToOutlineInputBorder(disabledBorder),
+    errorBorder: colorToOutlineInputBorder(errorBorder),
+    focusedErrorBorder: colorToOutlineInputBorder(focusedErrorBorder),
   );
+
+  static OutlineInputBorder? colorToOutlineInputBorder(Color? color) =>
+      color != null
+          ? OutlineInputBorder(borderSide: BorderSide(color: color))
+          : null;
 }
 
 class ReadOnlyTextField extends StatefulWidget {
@@ -149,17 +159,24 @@ class ReadOnlyTextField extends StatefulWidget {
 }
 
 class _ReadOnlyTextFieldState extends State<ReadOnlyTextField> {
-  final textEditingController = TextEditingController();
-
+  final _textEditingController = TextEditingController();
+  final _focusNode = FocusNode();
   @override
   void initState() {
     super.initState();
-    textEditingController.text = widget.text;
+    _textEditingController.text = widget.text;
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        widget.onTap?.call();
+        _focusNode.unfocus();
+      }
+    });
   }
 
   @override
   void dispose() {
-    textEditingController.dispose();
+    _textEditingController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -168,7 +185,7 @@ class _ReadOnlyTextFieldState extends State<ReadOnlyTextField> {
     super.didUpdateWidget(oldWidget);
 
     if (widget.text != oldWidget.text) {
-      textEditingController.text = widget.text;
+      _textEditingController.text = widget.text;
     }
   }
 
@@ -178,12 +195,12 @@ class _ReadOnlyTextFieldState extends State<ReadOnlyTextField> {
       readOnly: true,
       enabled: widget.enabled,
       decoration: widget.decoration ?? const InputDecoration(),
-      controller: textEditingController,
+      controller: _textEditingController,
+      focusNode: _focusNode,
       textAlign: widget.textAlign,
       textAlignVertical: widget.textAlignVertical,
       minLines: widget.minLines,
       maxLines: widget.maxLines,
-      onTap: widget.onTap,
     );
   }
 }

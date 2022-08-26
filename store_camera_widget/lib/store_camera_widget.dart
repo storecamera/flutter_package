@@ -2,6 +2,7 @@ library store_camera_widget;
 
 export 'dialog/dialog.dart';
 export 'dialog/dialog_worker.dart';
+export 'dialog/simple_dialog.dart';
 export 'layout/constrained_layout.dart';
 export 'layout/responsive_layout.dart';
 export 'painting/edge_insets.dart';
