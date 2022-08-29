@@ -7,3 +7,23 @@ extension ListExtension<T> on List<T> {
     return null;
   }
 }
+
+extension ListNullableExtension<T> on List<T>? {
+  T? firstWhereOrNull(bool Function(T e) test) {
+    final list = this;
+    if(list == null) {
+      return null;
+    }
+
+    for (var element in list) {
+      if (test(element)) return element;
+    }
+    return null;
+  }
+
+  bool get isEmptyOrNull => this?.isEmpty ?? true;
+
+  bool get isNotEmptyAndNotNull => this?.isNotEmpty ?? false;
+
+}
+
