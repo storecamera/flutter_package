@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 extension DateTimeExtention on DateTime {
@@ -8,6 +9,11 @@ extension DateTimeExtention on DateTime {
   // ignore: non_constant_identifier_names
   String format_yyyyMMdd([String divider = '.']) =>
       DateFormat('yyyy${divider}MM${divider}dd').format(this);
+
+  // ignore: non_constant_identifier_names
+  String format_yMMMd([BuildContext? context]) => DateFormat.yMMMd(
+          context != null ? Localizations.localeOf(context).toString() : null)
+      .format(this);
 
   DateTime subtractMonths(int value) {
     var y = value ~/ 12;

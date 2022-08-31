@@ -96,6 +96,17 @@ class StorageService {
             mimeType != null ? SettableMetadata(contentType: mimeType) : null);
   }
 
+  static Future<String> copyFile(Reference ref, String path,
+      {String? bucket}) async {
+    final metadata = await ref.getMetadata();
+
+    final taskSnapshot = await uploadFile(
+        (await ref.getData())!, path, name: metadata.name,
+        bucket: bucket,
+        mimeType: metadata.contentType);
+    return await taskSnapshot.ref.getDownloadURL();
+  }
+
   static Future<bool> tryDeleteFile(String path, [String? bucket]) async {
     try {
       await deleteFile(path, bucket);
