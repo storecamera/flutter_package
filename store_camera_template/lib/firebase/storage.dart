@@ -12,6 +12,8 @@ class StorageService {
       ? FirebaseStorage.instanceFor(bucket: bucket)
       : FirebaseStorage.instance;
 
+  static String uuidV4() => const Uuid().v4();
+
   static String? getName(String name) {
     try {
       final lastIndex = name.lastIndexOf(".");
@@ -34,6 +36,13 @@ class StorageService {
       if (url != null) {
         return FirebaseStorage.instance.refFromURL(url);
       }
+    } catch (_) {}
+    return null;
+  }
+
+  static Reference? ref({String? bucket, required String path}) {
+    try {
+        return StorageService.firebaseStorage(bucket).ref(path);
     } catch (_) {}
     return null;
   }
