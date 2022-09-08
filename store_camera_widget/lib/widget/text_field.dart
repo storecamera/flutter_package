@@ -200,6 +200,7 @@ class _ReadOnlyTextFieldState extends State<ReadOnlyTextField> {
       textAlignVertical: widget.textAlignVertical,
       minLines: widget.minLines,
       maxLines: widget.maxLines,
+      onTap: widget.onTap,
     );
   }
 }
