@@ -167,7 +167,6 @@ class _ReadOnlyTextFieldState extends State<ReadOnlyTextField> {
     _textEditingController.text = widget.text;
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
-        widget.onTap?.call();
         _focusNode.unfocus();
       }
     });
