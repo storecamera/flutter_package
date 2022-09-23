@@ -62,6 +62,22 @@ class ContractValue<T> extends ChangeNotifier {
     super.dispose();
   }
 
+  void clear() {
+    if (state == ContractValueState.disposed) {
+      throw StateError(
+          'clear is not set because ConnectionState is disposed');
+    }
+    _state = ContractValueState.waiting;
+    _value = null;
+    for (final subscription in subscriptions) {
+      subscription._data = null;
+      subscription._dispose = null;
+    }
+    subscriptions.clear();
+    _valueStreamSubscription?.cancel();
+    super.dispose();
+  }
+
   ContractValueSubscription listen(VoidCallback listener,
       [bool initNotify = false]) {
     if (state == ContractValueState.disposed) {
