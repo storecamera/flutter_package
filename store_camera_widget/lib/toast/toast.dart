@@ -318,7 +318,7 @@ class DefaultToastWidget extends StatelessWidget {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
       child: Container(
-        padding: const EdgeInsetsDynamic(horizontal: 16, vertical: 16),
+        padding: padding,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
