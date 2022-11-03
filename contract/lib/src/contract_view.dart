@@ -33,7 +33,7 @@ class ContractBuilder<T extends Contract> extends StatefulWidget {
   const ContractBuilder({Key? key, required this.builder, this.notFoundBuilder})
       : super(key: key);
 
-  final Widget Function(BuildContext context, Contract contract) builder;
+  final Widget Function(BuildContext context, T contract) builder;
   final Widget Function(BuildContext context)? notFoundBuilder;
 
   @override
