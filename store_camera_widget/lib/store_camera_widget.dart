@@ -11,6 +11,8 @@ export 'toast/toast_material.dart';
 export 'widget/box.dart';
 export 'widget/date_picker_widget.dart';
 export 'widget/text_field.dart';
+export 'widget/decorator_text_form_widget.dart';
+export 'widget/text_styles.dart';
 export 'widget/dropdown.dart';
 export 'widget/ink_well.dart';
 export 'widget/image.dart';
