@@ -17,14 +17,14 @@ enum TextStyles {
   labelMedium,
   labelSmall;
 
-  TextStyle? style(
-      BuildContext context, {
-        bool isPrimary = false,
-      }) {
-    final TextTheme textTheme = isPrimary
-        ? Theme.of(context).primaryTextTheme
-        : Theme.of(context).textTheme;
-    switch(this) {
+  TextStyle? _style(
+    ThemeData theme, {
+    bool isPrimary = false,
+  }) {
+    final TextTheme textTheme =
+        isPrimary ? theme.primaryTextTheme : theme.textTheme;
+
+    switch (this) {
       case TextStyles.displayLarge:
         return textTheme.displayLarge;
       case TextStyles.displayMedium:
@@ -58,8 +58,8 @@ enum TextStyles {
     }
   }
 
-  TextStyle? copyWith(
-    BuildContext context, {
+  TextStyle? style(
+    ThemeData theme, {
     Color? color,
     Color? backgroundColor,
     double? fontSize,
@@ -77,7 +77,8 @@ enum TextStyles {
     TextOverflow? overflow,
     bool isPrimary = false,
   }) {
-    return style(context, isPrimary: isPrimary)?.copyWith(
+    final textStyle = _style(theme, isPrimary: isPrimary);
+    if (_isCopyWith(
       color: color,
       backgroundColor: backgroundColor,
       fontSize: fontSize,
@@ -93,6 +94,60 @@ enum TextStyles {
       decorationThickness: decorationThickness,
       fontFamily: fontFamily,
       overflow: overflow,
-    );
+    )) {
+      return textStyle?.copyWith(
+        color: color,
+        backgroundColor: backgroundColor,
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        fontStyle: fontStyle,
+        letterSpacing: letterSpacing,
+        wordSpacing: wordSpacing,
+        textBaseline: textBaseline,
+        height: height,
+        decoration: decoration,
+        decorationColor: decorationColor,
+        decorationStyle: decorationStyle,
+        decorationThickness: decorationThickness,
+        fontFamily: fontFamily,
+        overflow: overflow,
+      );
+    }
+
+    return textStyle;
+  }
+
+  bool _isCopyWith({
+    Color? color,
+    Color? backgroundColor,
+    double? fontSize,
+    FontWeight? fontWeight,
+    FontStyle? fontStyle,
+    double? letterSpacing,
+    double? wordSpacing,
+    TextBaseline? textBaseline,
+    double? height,
+    TextDecoration? decoration,
+    Color? decorationColor,
+    TextDecorationStyle? decorationStyle,
+    double? decorationThickness,
+    String? fontFamily,
+    TextOverflow? overflow,
+  }) {
+    return color != null &&
+        backgroundColor != null &&
+        fontSize != null &&
+        fontWeight != null &&
+        fontStyle != null &&
+        letterSpacing != null &&
+        wordSpacing != null &&
+        textBaseline != null &&
+        height != null &&
+        decoration != null &&
+        decorationColor != null &&
+        decorationStyle != null &&
+        decorationThickness != null &&
+        fontFamily != null &&
+        overflow != null;
   }
 }
