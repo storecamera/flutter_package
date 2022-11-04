@@ -134,20 +134,20 @@ enum TextStyles {
     String? fontFamily,
     TextOverflow? overflow,
   }) {
-    return color != null &&
-        backgroundColor != null &&
-        fontSize != null &&
-        fontWeight != null &&
-        fontStyle != null &&
-        letterSpacing != null &&
-        wordSpacing != null &&
-        textBaseline != null &&
-        height != null &&
-        decoration != null &&
-        decorationColor != null &&
-        decorationStyle != null &&
-        decorationThickness != null &&
-        fontFamily != null &&
+    return color != null ||
+        backgroundColor != null ||
+        fontSize != null ||
+        fontWeight != null ||
+        fontStyle != null ||
+        letterSpacing != null ||
+        wordSpacing != null ||
+        textBaseline != null ||
+        height != null ||
+        decoration != null ||
+        decorationColor != null ||
+        decorationStyle != null ||
+        decorationThickness != null ||
+        fontFamily != null ||
         overflow != null;
   }
 }
