@@ -1,7 +1,5 @@
 library store_camera_widget;
 
-export 'extension/map_extension.dart';
-
 export 'dialog/dialog.dart';
 export 'dialog/dialog_worker.dart';
 export 'dialog/simple_dialog.dart';
