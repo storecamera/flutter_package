@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -152,10 +151,9 @@ class FirebaseStorageImageProvider
   }
 
   @override
-  ImageStreamCompleter load(
-      FirebaseStorageImageProvider key, DecoderCallback decode) {
+  ImageStreamCompleter loadBuffer(FirebaseStorageImageProvider key, DecoderBufferCallback decode) {
     final StreamController<ImageChunkEvent> chunkEvents =
-        StreamController<ImageChunkEvent>();
+    StreamController<ImageChunkEvent>();
 
     return MultiFrameImageStreamCompleter(
       codec: _loadAsync(key, chunkEvents, decode, cache),
@@ -167,10 +165,11 @@ class FirebaseStorageImageProvider
     );
   }
 
+
   Future<ui.Codec> _loadAsync(
       FirebaseStorageImageProvider key,
       StreamController<ImageChunkEvent> chunkEvents,
-      DecoderCallback decode,
+      DecoderBufferCallback decode,
       FirebaseStorageImageCache? cache) async {
     try {
       assert(key == this);
@@ -180,7 +179,7 @@ class FirebaseStorageImageProvider
           final cacheBytes = await cache.get(cacheKey);
           if (cacheBytes != null) {
             try {
-              final codec = await decode(cacheBytes);
+              final codec = await decode(await ui.ImmutableBuffer.fromUint8List(cacheBytes));
               return codec;
             } catch (e) {
               await cache.evict(cacheKey);
@@ -208,7 +207,7 @@ class FirebaseStorageImageProvider
       }
 
       try {
-        final codec = await decode(bytes);
+        final codec = await decode(await ui.ImmutableBuffer.fromUint8List(bytes));
         try {
           if (cache != null) {
             await cache.set(_cacheKey(key), bytes);
@@ -237,10 +236,10 @@ class FirebaseStorageImageProvider
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FirebaseStorageImageProvider &&
-          runtimeType == other.runtimeType &&
-          path == other.path &&
-          bucket == other.bucket;
+          other is FirebaseStorageImageProvider &&
+              runtimeType == other.runtimeType &&
+              path == other.path &&
+              bucket == other.bucket;
 
   @override
   int get hashCode => path.hashCode ^ bucket.hashCode;
