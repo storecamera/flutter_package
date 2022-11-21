@@ -18,7 +18,7 @@ dependencies:
   flutter_sheet_localization:
     git:
       url: https://github.com/storecamera/flutter_package.git
-      ref: 9dd7f96b5a50b3b7d2351ee4e31ee3935dd91efc
+      ref: b7d3a60b5053cc47cb5960a17beacf029832e308
       path: flutter_sheet_localization
   http: ^0.13.1
   intl: ^0.17.0

@@ -105,7 +105,7 @@ packages:
       name: characters
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   checked_yaml:
     dependency: transitive
     description:
@@ -213,8 +213,8 @@ packages:
     dependency: "direct main"
     description:
       path: flutter_sheet_localization
-      ref: "9dd7f96b5a50b3b7d2351ee4e31ee3935dd91efc"
-      resolved-ref: "9dd7f96b5a50b3b7d2351ee4e31ee3935dd91efc"
+      ref: b7d3a60b5053cc47cb5960a17beacf029832e308
+      resolved-ref: b7d3a60b5053cc47cb5960a17beacf029832e308
       url: "https://github.com/storecamera/flutter_package.git"
     source: git
     version: "5.1.1"
@@ -329,14 +329,14 @@ packages:
       name: material_color_utilities
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.4"
+    version: "0.1.5"
   meta:
     dependency: "direct main"
     description:
       name: meta
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.7.0"
+    version: "1.8.0"
   mime:
     dependency: transitive
     description:
