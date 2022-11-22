@@ -213,8 +213,8 @@ packages:
     dependency: "direct main"
     description:
       path: flutter_sheet_localization
-      ref: b7d3a60b5053cc47cb5960a17beacf029832e308
-      resolved-ref: b7d3a60b5053cc47cb5960a17beacf029832e308
+      ref: "8cdd88fca82f5e127e4276ef1c4ea8af9d28d85e"
+      resolved-ref: "8cdd88fca82f5e127e4276ef1c4ea8af9d28d85e"
       url: "https://github.com/storecamera/flutter_package.git"
     source: git
     version: "5.1.1"
