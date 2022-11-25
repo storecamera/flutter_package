@@ -79,13 +79,6 @@ class _ContractBinder<A> extends State<ContractPage<A>>
       return;
     }
 
-    for(final contract in _contracts.values) {
-      contract._context = () => context;
-      contract._attachContract();
-    }
-    _didChangeAppLifecycle(WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed);
-    WidgetsBinding.instance.addObserver(this);
-
     _init = true;
   }
 
@@ -107,6 +100,13 @@ class _ContractBinder<A> extends State<ContractPage<A>>
     if (_init) {
       if(!_initPageState) {
         _initPageState = true;
+        for(final contract in _contracts.values) {
+          contract._context = () => context;
+          contract._attachContract();
+        }
+        _didChangeAppLifecycle(WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed);
+        WidgetsBinding.instance.addObserver(this);
+
         _contractObserverListener(ModalRoute.of(context));
         ContractObserver.instance.addListener(_contractObserverListener);
       }
