@@ -112,23 +112,24 @@ class InputDecorationOutlineInputBorder extends InputDecoration {
     super.semanticCounterText,
     super.alignLabelWithHint,
     super.constraints,
+    BorderRadius borderRadius = const BorderRadius.all(Radius.circular(4.0)),
     Color? errorBorder,
     Color? focusedBorder,
     Color? focusedErrorBorder,
     Color? disabledBorder,
     Color? enabledBorder,
   }) : super(
-    border: const OutlineInputBorder(),
-    enabledBorder: colorToOutlineInputBorder(enabledBorder),
-    focusedBorder: colorToOutlineInputBorder(focusedBorder),
-    disabledBorder: colorToOutlineInputBorder(disabledBorder),
-    errorBorder: colorToOutlineInputBorder(errorBorder),
-    focusedErrorBorder: colorToOutlineInputBorder(focusedErrorBorder),
+    border: OutlineInputBorder(borderRadius: borderRadius),
+    enabledBorder: colorToOutlineInputBorder(enabledBorder, borderRadius),
+    focusedBorder: colorToOutlineInputBorder(focusedBorder, borderRadius),
+    disabledBorder: colorToOutlineInputBorder(disabledBorder, borderRadius),
+    errorBorder: colorToOutlineInputBorder(errorBorder, borderRadius),
+    focusedErrorBorder: colorToOutlineInputBorder(focusedErrorBorder, borderRadius),
   );
 
-  static OutlineInputBorder? colorToOutlineInputBorder(Color? color) =>
+  static OutlineInputBorder? colorToOutlineInputBorder(Color? color, BorderRadius borderRadius) =>
       color != null
-          ? OutlineInputBorder(borderSide: BorderSide(color: color))
+          ? OutlineInputBorder(borderSide: BorderSide(color: color), borderRadius: borderRadius)
           : null;
 }
 
