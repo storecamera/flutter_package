@@ -61,7 +61,8 @@ extension MapExtension on Map {
     if (value is T) {
       return value;
     }
-    throw NullThrownError();
+    throw MapExtensionException(
+        'key : $key, value ${this[key]}, T : $T, Type : ${this[key]?.runtimeType}');
   }
 
   List<T> getList<T>(dynamic key, [T Function(Map map)? converter]) {
@@ -101,12 +102,45 @@ extension MapExtension on Map {
         }
       } catch (_) {
         if (kDebugMode) {
-          print('Map getList Error $_');
+          print(
+              'MAP EXTENSION getList key : $key, T : $T, $_');
         }
       }
     }
 
     return results;
+  }
+
+  bool? getBool(dynamic key) {
+    final value = this[key];
+    if (value is bool) {
+      return value;
+    }
+    return null;
+  }
+
+  int? getInt(dynamic key) {
+    final value = this[key];
+    if (value is int) {
+      return value;
+    }
+    return null;
+  }
+
+  double? getDouble(dynamic key) {
+    final value = this[key];
+    if (value is double) {
+      return value;
+    }
+    return null;
+  }
+
+  String? getString(dynamic key) {
+    final value = this[key];
+    if (value is String) {
+      return value;
+    }
+    return null;
   }
 
   void removeNull() => removeWhere((key, value) => value == null);
@@ -149,5 +183,16 @@ String? dynamicToString(dynamic value) {
     return value;
   } else {
     return value?.toString();
+  }
+}
+
+class MapExtensionException implements Exception {
+  final String message;
+
+  const MapExtensionException(this.message);
+
+  @override
+  String toString() {
+    return 'MapExtensionException{message: $message}';
   }
 }
