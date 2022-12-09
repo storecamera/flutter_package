@@ -15,7 +15,7 @@ class StorageService {
 
   static String? getName(String name) {
     try {
-      final lastIndex = name.lastIndexOf(".");
+      final lastIndex = name.lastIndexOf('.');
       if (lastIndex > 0) {
         return name.substring(0, lastIndex);
       }
