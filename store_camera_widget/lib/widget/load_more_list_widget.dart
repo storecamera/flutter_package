@@ -52,7 +52,7 @@ class _LoadMoreListWidgetState extends State<LoadMoreListWidget> {
   Widget build(BuildContext context) {
     return CustomScrollView(
       controller: widget.controller.controller,
-      physics: AlwaysScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
         widget.sliverListBuilder(context, widget.controller.list),
         if (widget.controller.loadMore && widget.more != null)
