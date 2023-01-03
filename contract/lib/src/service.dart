@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
-import 'exceptions.dart';
+part of 'contract.dart';
 
-class Service extends ChangeNotifier {
+typedef ContractServiceLazyPut<T extends Service> = T Function();
+
+class Service extends ChangeNotifier with Fragment {
   static T of<T extends Service>() {
     final service = _Services.instance.of<T>();
     if (service != null) {
@@ -14,45 +14,45 @@ class Service extends ChangeNotifier {
   static bool put<T extends Service>(T service) =>
       _Services.instance.put<T>(service);
 
-  static void lazyPut<T extends Service>(ServiceLazyPut<T> service) =>
+  static void lazyPut<T extends Service>(ContractServiceLazyPut<T> service) =>
       _Services.instance.lazyPut<T>(service);
 
   static void remove<T extends Service>() => _Services.instance.remove<T>();
 
   static void disposeService() => _Services.instance.dispose();
 
-  @protected
-  @mustCallSuper
-  void init() {}
-
   @override
   @protected
   @mustCallSuper
   void dispose() {
+    onDispose();
     super.dispose();
+  }
+
+  @override
+  void update() {
+    notifyListeners();
   }
 }
 
-typedef ServiceLazyPut<T extends Service> = T Function();
-
 class _Services {
-
   static final _Services _instance = _Services._();
 
   static _Services get instance => _instance;
 
   _Services._();
 
-  final Map<Type, ServiceLazyPut> _lazyPut = {};
+  final Map<Type, ContractServiceLazyPut> _lazyPut = {};
   final Map<Type, Service> _services = {};
 
-  void lazyPut<T extends Service>(ServiceLazyPut<T> service) {
+  void lazyPut<T extends Service>(ContractServiceLazyPut<T> service) {
     _lazyPut[T] = service;
   }
 
   bool put<T extends Service>(T service) {
     if (!_services.containsKey(T) && !_lazyPut.containsKey(T)) {
-      _services[T] = service..init();
+      // ignore: invalid_use_of_protected_member
+      _services[T] = service..onInit();
       return true;
     }
     return false;
@@ -62,17 +62,20 @@ class _Services {
     _services.remove(T)?.dispose();
   }
 
-  T? of<T extends Service>() {
+  T? of<T extends Service>() => _of<T>();
+
+  T? _of<T extends Fragment>() {
     final service = _services[T];
     if (service is T) {
-      return service;
+      return service as T;
     }
     final lazyPut = _lazyPut[T];
-    if(lazyPut != null) {
+    if (lazyPut != null) {
       final newService = lazyPut();
-      if(newService is T) {
-        _services[T] = newService..init();
-        return newService;
+      if (newService is T) {
+        // ignore: invalid_use_of_protected_member
+        _services[T] = newService..onInit();
+        return newService as T;
       }
     }
 
@@ -80,11 +83,10 @@ class _Services {
   }
 
   void dispose() {
-    for(final service in _services.values) {
+    for (final service in _services.values) {
       service.dispose();
     }
     _lazyPut.clear();
     _services.clear();
   }
 }
-

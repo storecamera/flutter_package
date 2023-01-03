@@ -5,6 +5,7 @@ enum ContractExceptions {
   notFoundContractContext,
   notFoundService,
   notFoundServiceAtBuilder,
+  invalidArguments,
 }
 
 extension ContractExceptionsExtension on ContractExceptions {

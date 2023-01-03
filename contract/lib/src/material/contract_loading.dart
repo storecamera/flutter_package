@@ -1,4 +1,4 @@
-import 'package:contract/src/contract_value.dart';
+import 'package:contract/src/value.dart';
 import 'package:flutter/material.dart';
 
 typedef ContractLoadingBuilder = Widget Function(
@@ -24,18 +24,20 @@ class ContractLoadingTheme {
 enum _LoadingState { init, lock, loading, hiding }
 
 class ContractLoadingController {
-  final ContractNotNull<_LoadingState> _loadingValue =
-      ContractValue.notNull(value: _LoadingState.init);
+
+  final _loadingValue = Value(value: _LoadingState.init);
 
   int _loadingCount = 0;
 
-  int _loadingShowDelayMs = ContractLoadingTheme.instance.loadingShowDelayMs;
+  final int _loadingShowDelayMs;
 
-  set loadingShowDelayMs(int delay) => _loadingShowDelayMs = delay;
+  final int _loadingHideDelayMs;
 
-  int _loadingHideDelayMs = ContractLoadingTheme.instance.loadingHideDelayMs;
-
-  set loadingHideDelayMs(int delay) => _loadingHideDelayMs = delay;
+  ContractLoadingController({int? showDelayMs, int? hideDelayMs})
+      : _loadingShowDelayMs =
+            showDelayMs ?? ContractLoadingTheme.instance.loadingShowDelayMs,
+        _loadingHideDelayMs =
+            hideDelayMs ?? ContractLoadingTheme.instance.loadingHideDelayMs;
 
   void showContractLoading() {
     final state = _loadingValue.value;

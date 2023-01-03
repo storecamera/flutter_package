@@ -1,51 +1,124 @@
+import 'package:contract/src/fragment.dart';
+import 'package:contract/src/value.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'contract_observer.dart';
+import 'observer.dart';
 import 'exceptions.dart';
 
-part 'contract_binder.dart';
-part 'contract_view.dart';
+part 'binder.dart';
 
-class Contract extends ChangeNotifier {
+part 'service.dart';
 
-  static ContractBinder binder(BuildContext context) {
-    ContractBinder? binder;
-    if (context is StatefulElement && context.state is ContractBinder) {
-      binder = context.state as ContractBinder;
+part 'widget.dart';
+
+class Contract extends ChangeNotifier with Fragment {
+  static PageBinder _binder(BuildContext context) {
+    if (context is StatefulElement && context.state is PageBinder) {
+      return context.state as PageBinder;
     } else {
-      // binder = context.dependOnInheritedWidgetOfExactType<_ContractBinderInheritedWidget>()?.binder;
       final widget = context
           .getElementForInheritedWidgetOfExactType<
-          _ContractBinderInheritedWidget>()
+              _ContractBinderInheritedWidget>()
           ?.widget;
       if (widget is _ContractBinderInheritedWidget) {
-        binder = widget.binder;
+        return widget.binder;
       }
-    }
-    if (binder != null) {
-      return binder;
     }
 
     throw ContractExceptions.notFoundContractBinder.exception;
   }
 
-  static T of<T extends Contract>(BuildContext context) {
-    final contract = binder(context).of<T>();
-    if (contract is T) {
-      return contract;
+  static Element? _parent(BuildContext? buildContext) {
+    Element? element;
+    buildContext?.visitAncestorElements((e) {
+      element = e;
+      return false;
+    });
+    return element;
+  }
+
+  static T? binder<T extends PageBinder>(BuildContext context) {
+    if (context is StatefulElement && context.state is T) {
+      return context.state as T;
     }
+
+    BuildContext? buildContext = context;
+    while (buildContext != null) {
+      final inheritedElement =
+          context.getElementForInheritedWidgetOfExactType<
+              _ContractBinderInheritedWidget>();
+      buildContext = _parent(inheritedElement);
+      if (inheritedElement != null) {
+        final binder =
+            (inheritedElement.widget as _ContractBinderInheritedWidget)
+                .binder;
+        if (binder is T) {
+          return binder;
+        }
+      }
+    }
+
+
+    return null;
+  }
+
+  static T of<T extends Fragment>(BuildContext context) {
+    if (context is StatefulElement && context.state is PageBinder) {
+      final binder = context.state as PageBinder;
+      if (binder is T) {
+        return binder as T;
+      }
+
+      final contract = binder._of<T>();
+      if (contract != null) {
+        return contract;
+      }
+    }
+
+    BuildContext? buildContext = context;
+    while (buildContext != null) {
+      InheritedElement? inheritedElement =
+          buildContext.getElementForInheritedWidgetOfExactType<
+              _ContractBinderInheritedWidget>();
+      buildContext = _parent(inheritedElement);
+      if (inheritedElement != null) {
+        final binder =
+            (inheritedElement.widget as _ContractBinderInheritedWidget).binder;
+
+        if (binder is T) {
+          return binder as T;
+        }
+
+        final contract = binder._of<T>();
+        if (contract != null) {
+          return contract;
+        }
+      }
+    }
+
+    final service = _Services.instance._of<T>();
+    if (service != null) {
+      return service;
+    }
+
     throw ContractExceptions.notFoundContract.exception;
   }
 
   static void lazyPut<T extends Contract>(
           BuildContext context, ContractBinderLazyPut<T> contract) =>
-      binder(context).lazyPut(contract);
+      _binder(context).lazyPut(contract);
 
   static bool put<T extends Contract>(BuildContext context, T contract) =>
-      binder(context).put(contract);
+      _binder(context).put(contract);
 
   static T? remove<T extends Contract>(BuildContext context) =>
-      binder(context).remove<T>();
+      _binder(context).remove<T>();
+
+  static Value<T> value<T>({T? value, Object? error}) =>
+      Value<T>(value: value, error: error);
+
+  static ValueN<T> valueN<T>({T? value, Object? error}) =>
+      ValueN<T>(value: value, error: error);
 
   bool _init = false;
   bool _disposed = false;
@@ -54,61 +127,57 @@ class Contract extends ChangeNotifier {
   bool _isAttachContract = false; // ignore: prefer_final_fields
   bool get isAttachContract => _isAttachContract;
 
-  int _attachViewCount = 0; // ignore: prefer_final_fields
-  bool get isAttachView => _attachViewCount > 0;
+  final List<BuildContext> _widgetContexts = [];
+
+  bool get isAttachWidget => _widgetContexts.isNotEmpty;
 
   bool _pageState = false; // ignore: prefer_final_fields
   bool _appLifecycleState = false; // ignore: prefer_final_fields
-
-  @protected
-  @mustCallSuper
-  void init() {}
 
   @override
   @protected
   @mustCallSuper
   void dispose() {
+    onDispose();
     super.dispose();
   }
 
-  void resumeLifeCycle() {}
-
-  void pauseLifeCycle() {}
-
   @mustCallSuper
   void didChangeLifeCycle() {
-    if(isAttachContract) {
-      if(!_init) {
+    if (isAttachContract) {
+      if (!_init) {
         _init = true;
-        init();
+        onInit();
       }
 
-      final resumed = _pageState && _appLifecycleState && isAttachView;
-      if(_resumed != resumed) {
+      final resumed = _pageState && _appLifecycleState && isAttachWidget;
+      if (_resumed != resumed) {
         _resumed = resumed;
-        if(_resumed) {
-          resumeLifeCycle();
+        if (_resumed) {
+          onResume();
         } else {
-          pauseLifeCycle();
+          onPause();
         }
       }
-    } else if(!isAttachView && !_disposed) {
-      if(_resumed) {
+    } else if (!isAttachWidget && !_disposed) {
+      if (_resumed) {
         _resumed = false;
-        pauseLifeCycle();
+        onPause();
       }
       _disposed = true;
       dispose();
     }
   }
 
-  BuildContext Function()? _context;
-
   BuildContext get context {
-    final context = _context?.call();
-    if (context != null) {
-      return context;
+    if (_widgetContexts.isNotEmpty) {
+      return _widgetContexts.last;
     }
     throw ContractExceptions.notFoundContractContext.exception;
+  }
+
+  @override
+  void update() {
+    notifyListeners();
   }
 }
