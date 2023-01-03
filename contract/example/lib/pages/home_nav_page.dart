@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:contract/contract.dart';
 
-import 'home_count_view.dart';
-
 class HomeNavContract extends Contract {
   int _counter = 0;
 
