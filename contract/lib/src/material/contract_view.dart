@@ -1,7 +1,8 @@
 import 'package:contract/src/contract.dart';
+import 'package:contract/src/fragment.dart';
 import 'package:flutter/material.dart';
 
-abstract class ContractThemeWidget<T extends Contract> extends ContractWidget<T> {
+abstract class ContractThemeWidget<T extends ContractFragment> extends ContractWidget<T> {
   final ThemeData theme;
 
   ContractThemeWidget({

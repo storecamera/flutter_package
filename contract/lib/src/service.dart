@@ -2,7 +2,7 @@ part of 'contract.dart';
 
 typedef ContractServiceLazyPut<T extends Service> = T Function();
 
-class Service extends ChangeNotifier with Fragment {
+class Service extends ChangeNotifier with ContractFragment {
   static T of<T extends Service>() {
     final service = _Services.instance.of<T>();
     if (service != null) {
@@ -64,7 +64,7 @@ class _Services {
 
   T? of<T extends Service>() => _of<T>();
 
-  T? _of<T extends Fragment>() {
+  T? _of<T extends ContractFragment>() {
     final service = _services[T];
     if (service is T) {
       return service as T;

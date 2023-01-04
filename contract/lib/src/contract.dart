@@ -11,7 +11,7 @@ part 'service.dart';
 
 part 'widget.dart';
 
-class Contract extends ChangeNotifier with Fragment {
+class Contract extends ChangeNotifier with ContractFragment {
   static PageBinder _binder(BuildContext context) {
     if (context is StatefulElement && context.state is PageBinder) {
       return context.state as PageBinder;
@@ -62,7 +62,7 @@ class Contract extends ChangeNotifier with Fragment {
     return null;
   }
 
-  static T of<T extends Fragment>(BuildContext context) {
+  static T of<T extends ContractFragment>(BuildContext context) {
     if (context is StatefulElement && context.state is PageBinder) {
       final binder = context.state as PageBinder;
       if (binder is T) {

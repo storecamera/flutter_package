@@ -37,7 +37,7 @@ class ContractPageBuilder extends ContractPage {
   DefaultPageBinder createBinder() => DefaultPageBinder(initBinder: binder);
 }
 
-abstract class PageBinder extends State<ContractPage> with Fragment, WidgetsBindingObserver {
+abstract class PageBinder extends State<ContractPage> with ContractFragment, WidgetsBindingObserver {
 
   final Map<Type, ContractBinderLazyPut> _lazyPut = {};
   final Map<Type, Contract> _contracts = {};
@@ -134,7 +134,7 @@ abstract class PageBinder extends State<ContractPage> with Fragment, WidgetsBind
 
   T? of<T extends Contract>() => _of<T>();
 
-  T? _of<T extends Fragment>() {
+  T? _of<T extends ContractFragment>() {
     final contract = _contracts[T];
     if (contract is T) {
       return contract as T;

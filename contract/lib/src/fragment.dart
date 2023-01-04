@@ -1,7 +1,7 @@
 import 'package:contract/src/log.dart';
 import 'package:flutter/foundation.dart';
 
-mixin Fragment {
+mixin ContractFragment {
   @protected
   @mustCallSuper
   void onInit() {

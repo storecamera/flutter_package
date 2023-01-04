@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:contract/src/fragment.dart';
 import 'package:contract/src/value.dart';
 import 'package:flutter/material.dart';
 
@@ -7,7 +8,7 @@ typedef AsyncWorkerError = void Function(BuildContext context, Object e);
 typedef AsyncWorkerWidgetBuilder = Widget Function(
     BuildContext context, bool loading);
 
-mixin AsyncWorker {
+mixin AsyncWorker on ContractFragment {
   final _state = Value(value: false);
   int _workerCount = 0;
 
@@ -30,8 +31,10 @@ mixin AsyncWorker {
     }
   }
 
-  void dispose() {
+  @override
+  void onDispose() {
     _state.dispose();
+    super.onDispose();
   }
 
   void asyncWorker<T>(Future<T> Function() worker,

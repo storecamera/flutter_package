@@ -1,6 +1,6 @@
 part of 'contract.dart';
 
-abstract class ContractWidget<T extends Fragment>
+abstract class ContractWidget<T extends ContractFragment>
     extends StatelessWidget {
   late final T contract;
 
@@ -11,7 +11,7 @@ abstract class ContractWidget<T extends Fragment>
   StatelessElement createElement() => _ContractElement<T>(this);
 }
 
-class _ContractElement<T extends Fragment> extends StatelessElement {
+class _ContractElement<T extends ContractFragment> extends StatelessElement {
   _ContractElement(ContractWidget<T> widget) : super(widget);
 
   @override
