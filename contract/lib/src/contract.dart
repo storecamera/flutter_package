@@ -2,7 +2,6 @@ import 'package:contract/src/fragment.dart';
 import 'package:contract/src/value.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'log.dart';
 import 'observer.dart';
 import 'exceptions.dart';
 
