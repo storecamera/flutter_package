@@ -9,13 +9,13 @@ class HomePage extends ContractPage {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  PageBinder createBinder() => HomeBinder();
+  BinderContract createBinder() => HomeBinder();
 
   @override
   Widget build(BuildContext context) => HomeWidget();
 }
 
-class HomeBinder extends PageBinder with SingleTickerProviderStateMixin {
+class HomeBinder extends BinderContract with SingleTickerProviderStateMixin {
   late final TabController tabController =
       TabController(initialIndex: tabIndex.value, length: 3, vsync: this);
 

@@ -9,7 +9,7 @@ abstract class ContractPage extends StatefulWidget {
 
   @protected
   @factory
-  PageBinder createBinder();
+  BinderContract createBinder();
 
   Widget build(BuildContext context);
 
@@ -18,7 +18,7 @@ abstract class ContractPage extends StatefulWidget {
       createBinder(); // ignore: no_logic_in_create_state
 }
 
-typedef ContractPageBinder = void Function(BuildContext context, PageBinder binder, dynamic arguments);
+typedef ContractPageBinder = void Function(BuildContext context, BinderContract binder, dynamic arguments);
 
 class ContractPageBuilder extends ContractPage {
   final ContractPageBinder binder;
@@ -34,10 +34,10 @@ class ContractPageBuilder extends ContractPage {
   Widget build(BuildContext context) => builder(context);
 
   @override
-  DefaultPageBinder createBinder() => DefaultPageBinder(initBinder: binder);
+  DefaultBinderContract createBinder() => DefaultBinderContract(initBinder: binder);
 }
 
-abstract class PageBinder extends State<ContractPage> with ContractFragment, WidgetsBindingObserver {
+abstract class BinderContract extends State<ContractPage> with ContractFragment, WidgetsBindingObserver {
 
   final Map<Type, ContractBinderLazyPut> _lazyPut = {};
   final Map<Type, Contract> _contracts = {};
@@ -76,8 +76,6 @@ abstract class PageBinder extends State<ContractPage> with ContractFragment, Wid
 
   @override
   void dispose() {
-    onDispose();
-
     WidgetsBinding.instance.removeObserver(this);
     ContractObserver.instance.removeListener(_contractObserverListener);
     for (final contract in _contracts.values) {
@@ -85,6 +83,11 @@ abstract class PageBinder extends State<ContractPage> with ContractFragment, Wid
     }
     _lazyPut.clear();
     _contracts.clear();
+    if(_resumed) {
+      _resumed = false;
+      onPause();
+    }
+    onDispose();
     super.dispose();
   }
 
@@ -222,10 +225,10 @@ abstract class PageBinder extends State<ContractPage> with ContractFragment, Wid
   }
 }
 
-class DefaultPageBinder extends PageBinder {
+class DefaultBinderContract extends BinderContract {
   final ContractPageBinder initBinder;
 
-  DefaultPageBinder({required this.initBinder});
+  DefaultBinderContract({required this.initBinder});
 
   @override
   void onInit() {
@@ -235,7 +238,7 @@ class DefaultPageBinder extends PageBinder {
 }
 
 class _ContractBinderInheritedWidget extends InheritedWidget {
-  final PageBinder binder;
+  final BinderContract binder;
 
   const _ContractBinderInheritedWidget(
       {required this.binder, required super.child});
@@ -244,7 +247,7 @@ class _ContractBinderInheritedWidget extends InheritedWidget {
   bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
 }
 
-extension _ContractFragmentLifecycleExtension on Contract {
+extension _ContractLifecycleExtension on Contract {
   void _attachContract() {
     if (!_isAttachContract) {
       _isAttachContract = true;

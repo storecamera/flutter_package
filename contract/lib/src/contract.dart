@@ -2,6 +2,7 @@ import 'package:contract/src/fragment.dart';
 import 'package:contract/src/value.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'log.dart';
 import 'observer.dart';
 import 'exceptions.dart';
 
@@ -12,9 +13,9 @@ part 'service.dart';
 part 'widget.dart';
 
 class Contract extends ChangeNotifier with ContractFragment {
-  static PageBinder _binder(BuildContext context) {
-    if (context is StatefulElement && context.state is PageBinder) {
-      return context.state as PageBinder;
+  static BinderContract _binder(BuildContext context) {
+    if (context is StatefulElement && context.state is BinderContract) {
+      return context.state as BinderContract;
     } else {
       final widget = context
           .getElementForInheritedWidgetOfExactType<
@@ -37,7 +38,7 @@ class Contract extends ChangeNotifier with ContractFragment {
     return element;
   }
 
-  static T? binder<T extends PageBinder>(BuildContext context) {
+  static T? binder<T extends BinderContract>(BuildContext context) {
     if (context is StatefulElement && context.state is T) {
       return context.state as T;
     }
@@ -63,8 +64,8 @@ class Contract extends ChangeNotifier with ContractFragment {
   }
 
   static T of<T extends ContractFragment>(BuildContext context) {
-    if (context is StatefulElement && context.state is PageBinder) {
-      final binder = context.state as PageBinder;
+    if (context is StatefulElement && context.state is BinderContract) {
+      final binder = context.state as BinderContract;
       if (binder is T) {
         return binder as T;
       }

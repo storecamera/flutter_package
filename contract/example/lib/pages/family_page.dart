@@ -6,13 +6,13 @@ class FamilyPage extends ContractPage {
   const FamilyPage({super.key, super.arguments});
 
   @override
-  PageBinder createBinder() => FamilyBinder();
+  BinderContract createBinder() => FamilyBinder();
 
   @override
   Widget build(BuildContext context) => FamilyWidget();
 }
 
-class FamilyBinder extends PageBinder {
+class FamilyBinder extends BinderContract {
 
   late final String family;
   late final List<String> persons;

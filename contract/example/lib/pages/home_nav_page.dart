@@ -68,13 +68,13 @@ class Nav1Page extends ContractPage {
   const Nav1Page({Key? key}) : super(key: key);
 
   @override
-  PageBinder createBinder() => Nav1Binder();
+  BinderContract createBinder() => Nav1Binder();
 
   @override
   Widget build(BuildContext context) => Nav1Widget();
 }
 
-class Nav1Binder extends PageBinder {
+class Nav1Binder extends BinderContract {
 
   int _counter = 0;
 
