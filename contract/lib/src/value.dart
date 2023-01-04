@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:contract/src/exceptions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 part 'value_notnull.dart';
+
 part 'value_nullable.dart';
 
 enum ContractValueState {
@@ -25,12 +27,6 @@ class _Value<T> extends ChangeNotifier {
             ? ContractValueState.active
             : ContractValueState.waiting;
 
-  // static ContractNotNull<T> notNull<T>({T? value, Object? error}) =>
-  //     ContractNotNull(value: value, error: error);
-  //
-  // static ContractNullable<T> nullable<T>({Object? error}) =>
-  //     ContractNullable(error: error);
-
   ContractValueState get state => _state;
 
   bool get hasValue => _value != null;
@@ -43,7 +39,8 @@ class _Value<T> extends ChangeNotifier {
 
   set error(Object? error) {
     if (state == ContractValueState.disposed) {
-      throw StateError('error is not set because ConnectionState is disposed');
+      throw const ContractExceptionValueStatus(
+          'error is not set because ContractValueState is disposed');
     }
     _error = error;
     notifyListeners();
@@ -52,8 +49,8 @@ class _Value<T> extends ChangeNotifier {
   @override
   void dispose() {
     if (state == ContractValueState.disposed) {
-      throw StateError(
-          'dispose is not set because ConnectionState is disposed');
+      throw const ContractExceptionValueStatus(
+          'dispose is not set because ContractValueState is disposed');
     }
     _state = ContractValueState.disposed;
     for (final subscription in subscriptions) {
@@ -67,8 +64,8 @@ class _Value<T> extends ChangeNotifier {
 
   void clear() {
     if (state == ContractValueState.disposed) {
-      throw StateError(
-          'clear is not set because ConnectionState is disposed');
+      throw const ContractExceptionValueStatus(
+          'clear is not set because ContractValueState is disposed');
     }
     _state = ContractValueState.waiting;
     _value = null;
@@ -84,7 +81,8 @@ class _Value<T> extends ChangeNotifier {
   ContractValueSubscription listen(VoidCallback listener,
       [bool initNotify = false]) {
     if (state == ContractValueState.disposed) {
-      throw StateError('listen is not set because ConnectionState is disposed');
+      throw const ContractExceptionValueStatus(
+          'listen is not set because ContractValueState is disposed');
     }
 
     final subscription = ContractValueSubscription._(

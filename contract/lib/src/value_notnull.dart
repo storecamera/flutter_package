@@ -8,14 +8,14 @@ class Value<T> extends _Value<T> {
     if (_value != null) {
       return _value!;
     }
-    throw NullThrownError();
+    throw const ContractExceptionValueStatus('value is null');
   }
 
   T? get valueOrNull => _value;
 
   set value(T value) {
     if (state == ContractValueState.disposed) {
-      throw StateError('value is not set because ConnectionState is disposed');
+      throw const ContractExceptionValueStatus('value is not set because ContractValueState is disposed');
     }
     _value = value;
     _error = null;

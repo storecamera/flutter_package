@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:contract/src/exceptions.dart';
 import 'package:contract/src/fragment.dart';
 import 'package:contract/src/value.dart';
 import 'package:flutter/material.dart';
@@ -9,17 +10,29 @@ typedef AsyncWorkerWidgetBuilder = Widget Function(
     BuildContext context, bool loading);
 
 mixin AsyncWorker on ContractFragment {
+  bool _isDisposed = false;
+
+  bool get isDisposed => _isDisposed;
+
+  final List<StreamSubscription<dynamic>> _subscriptionsList = [];
+
   final _state = Value(value: false);
   int _workerCount = 0;
 
   final List<BuildContext Function()> _widgetContexts = [];
 
   void showLoading() {
+    if(isDisposed) {
+      throw ContractExceptionAsyncWorkerDisposed(runtimeType, 'showLoading');
+    }
     _workerCount++;
     _updateWorkerState();
   }
 
   void hideLoading() {
+    if(isDisposed) {
+      throw ContractExceptionAsyncWorkerDisposed(runtimeType, 'hideLoading');
+    }
     _workerCount--;
     _updateWorkerState();
   }
@@ -33,12 +46,20 @@ mixin AsyncWorker on ContractFragment {
 
   @override
   void onDispose() {
+    _isDisposed = true;
+    for (var element in _subscriptionsList) {
+      element.cancel();
+    }
     _state.dispose();
     super.onDispose();
   }
 
   void asyncWorker<T>(Future<T> Function() worker,
       {void Function(T data)? onData, Object? Function(Object e)? onError}) async {
+    if(isDisposed) {
+      throw ContractExceptionAsyncWorkerDisposed(runtimeType, 'asyncWorker');
+    }
+
     showLoading();
     try {
       final T result = await worker();
@@ -64,6 +85,25 @@ mixin AsyncWorker on ContractFragment {
     } finally {
       hideLoading();
     }
+  }
+
+  StreamSubscription<T> subscription<T>(
+    Stream<T> stream, {
+    void Function(T data)? onData,
+    void Function()? onDone,
+    void Function(Object error)? onError,
+    bool? cancelOnError,
+  }) {
+    if (isDisposed) {
+      throw ContractExceptionAsyncWorkerDisposed(runtimeType, 'subscription');
+    }
+    final subscription = stream.listen(onData, onError: ([error, stackTrace]) {
+      onError?.call(error);
+    }, onDone: () {
+      onDone?.call();
+    }, cancelOnError: cancelOnError);
+    _subscriptionsList.add(subscription);
+    return subscription;
   }
 }
 

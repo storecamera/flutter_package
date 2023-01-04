@@ -28,7 +28,7 @@ class HomeNavWidget extends ContractWidget<HomeNavContract> {
                     settings: settings);
               case '/nav2':
                 return MaterialPageRoute(
-                    builder: (context) => ContractPageBuilder(
+                    builder: (context) => ContractPageBinderBuilder(
                       binder: (context, binder, arguments) {
                         binder.lazyPut(() => Nav2Contract());
                       },

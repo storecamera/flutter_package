@@ -7,7 +7,7 @@ class ValueN<T> extends _Value<T> {
 
   set value(T? value) {
     if (state == ContractValueState.disposed) {
-      throw StateError('value is not set because ConnectionState is disposed');
+      throw const ContractExceptionValueStatus('value is not set because ContractValueState is disposed');
     }
     _value = value;
     _error = null;

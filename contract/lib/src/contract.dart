@@ -25,7 +25,7 @@ class Contract extends ChangeNotifier with ContractFragment {
       }
     }
 
-    throw ContractExceptions.notFoundContractBinder.exception;
+    throw const ContractExceptionNotFoundBinderFromParent();
   }
 
   static Element? _parent(BuildContext? buildContext) {
@@ -37,29 +37,26 @@ class Contract extends ChangeNotifier with ContractFragment {
     return element;
   }
 
-  static T? binder<T extends BinderContract>(BuildContext context) {
+  static T binder<T extends BinderContract>(BuildContext context) {
     if (context is StatefulElement && context.state is T) {
       return context.state as T;
     }
 
     BuildContext? buildContext = context;
     while (buildContext != null) {
-      final inheritedElement =
-          context.getElementForInheritedWidgetOfExactType<
-              _ContractBinderInheritedWidget>();
+      final inheritedElement = context.getElementForInheritedWidgetOfExactType<
+          _ContractBinderInheritedWidget>();
       buildContext = _parent(inheritedElement);
       if (inheritedElement != null) {
         final binder =
-            (inheritedElement.widget as _ContractBinderInheritedWidget)
-                .binder;
+            (inheritedElement.widget as _ContractBinderInheritedWidget).binder;
         if (binder is T) {
           return binder;
         }
       }
     }
 
-
-    return null;
+    throw ContractExceptionNotFoundBinder(T);
   }
 
   static T of<T extends ContractFragment>(BuildContext context) {
@@ -101,7 +98,7 @@ class Contract extends ChangeNotifier with ContractFragment {
       return service;
     }
 
-    throw ContractExceptions.notFoundContract.exception;
+    throw ContractExceptionNotFoundContract(T);
   }
 
   static void lazyPut<T extends Contract>(
@@ -173,7 +170,7 @@ class Contract extends ChangeNotifier with ContractFragment {
     if (_widgetContexts.isNotEmpty) {
       return _widgetContexts.last;
     }
-    throw ContractExceptions.notFoundContractContext.exception;
+    throw ContractExceptionContext(runtimeType);
   }
 
   @override

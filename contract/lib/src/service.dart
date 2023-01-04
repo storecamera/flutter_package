@@ -8,7 +8,7 @@ class Service extends ChangeNotifier with ContractFragment {
     if (service != null) {
       return service;
     }
-    throw ContractExceptions.notFoundService.exception;
+    throw ContractExceptionNotFoundService(T);
   }
 
   static bool put<T extends Service>(T service) =>

@@ -18,13 +18,32 @@ abstract class ContractPage extends StatefulWidget {
       createBinder(); // ignore: no_logic_in_create_state
 }
 
-typedef ContractPageBinder = void Function(BuildContext context, BinderContract binder, dynamic arguments);
+typedef ContractPageCreateBinder = BinderContract Function();
 
 class ContractPageBuilder extends ContractPage {
-  final ContractPageBinder binder;
+  final ContractPageCreateBinder binder;
   final WidgetBuilder builder;
 
   const ContractPageBuilder(
+      {super.key,
+      super.arguments,
+      required this.binder,
+      required this.builder});
+
+  @override
+  Widget build(BuildContext context) => builder(context);
+
+  @override
+  BinderContract createBinder() => binder();
+}
+
+typedef ContractPageInitBinder = void Function(BuildContext context, BinderContract binder, dynamic arguments);
+
+class ContractPageBinderBuilder extends ContractPage {
+  final ContractPageInitBinder binder;
+  final WidgetBuilder builder;
+
+  const ContractPageBinderBuilder(
       {super.key,
       super.arguments,
       required this.binder,
@@ -49,6 +68,14 @@ abstract class BinderContract extends State<ContractPage> with ContractFragment,
   bool _resumed = false;
 
   dynamic get arguments => widget.arguments;
+
+  T? getArgumentsByType<T>() {
+    final arguments = this.arguments;
+    if(arguments is T) {
+      return arguments;
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) => _init
@@ -226,7 +253,7 @@ abstract class BinderContract extends State<ContractPage> with ContractFragment,
 }
 
 class DefaultBinderContract extends BinderContract {
-  final ContractPageBinder initBinder;
+  final ContractPageInitBinder initBinder;
 
   DefaultBinderContract({required this.initBinder});
 

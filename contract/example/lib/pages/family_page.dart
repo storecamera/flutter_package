@@ -26,7 +26,7 @@ class FamilyBinder extends BinderContract {
       family = arguments;
       persons = FamilyService.instance.getPerson(family);
     } else {
-      throw ContractExceptions.invalidArguments.exception;
+      throw const ContractExceptionInvalidArguments();
     }
   }
 }
