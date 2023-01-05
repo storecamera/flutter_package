@@ -31,7 +31,11 @@ class PersonWidget extends ContractWidget<PersonContract> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(contract.person),
+                TextButton(onPressed: () {
+                  showDialog(context: context, builder: (context) {
+                    return const AlertDialog(content: Text('Simple dialog'),);
+                  });
+                }, child: Text(contract.person)),
               ],
             ),
           )),

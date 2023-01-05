@@ -18,26 +18,31 @@ class HomeNavWidget extends ContractWidget<HomeNavContract> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Navigator(
-          initialRoute: '/nav1',
-          onGenerateRoute: (RouteSettings settings) {
-            switch(settings.name) {
-              case '/nav1':
-                return MaterialPageRoute(
-                    builder: (context) => const Nav1Page(),
-                    settings: settings);
-              case '/nav2':
-                return MaterialPageRoute(
-                    builder: (context) => ContractPageBinderBuilder(
-                      binder: (context, binder, arguments) {
-                        binder.lazyPut(() => Nav2Contract());
-                      },
-                      builder: (context) => Nav2Widget(),
-                    ),
-                    settings: settings);
-            }
-            return null;
-          },
+        child: ContractObserverBuilder(
+          builder: (context, observer) {
+            return Navigator(
+              initialRoute: '/nav1',
+              observers: [observer],
+              onGenerateRoute: (RouteSettings settings) {
+                switch(settings.name) {
+                  case '/nav1':
+                    return MaterialPageRoute(
+                        builder: (context) => const Nav1Page(),
+                        settings: settings);
+                  case '/nav2':
+                    return MaterialPageRoute(
+                        builder: (context) => ContractPageBinderBuilder(
+                          binder: (context, binder, arguments) {
+                            binder.lazyPut(() => Nav2Contract());
+                          },
+                          builder: (context) => Nav2Widget(),
+                        ),
+                        settings: settings);
+                }
+                return null;
+              },
+            );
+          }
         )
     );
   }

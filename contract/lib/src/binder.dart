@@ -57,6 +57,7 @@ class ContractPageBinderBuilder extends ContractPage {
 }
 
 abstract class BinderContract extends State<ContractPage> with ContractFragment, WidgetsBindingObserver {
+  ContractObserver? _observer;
 
   final Map<Type, ContractBinderLazyPut> _lazyPut = {};
   final Map<Type, Contract> _contracts = {};
@@ -102,23 +103,6 @@ abstract class BinderContract extends State<ContractPage> with ContractFragment,
   }
 
   @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    ContractObserver.instance.removeListener(_contractObserverListener);
-    for (final contract in _contracts.values) {
-      _disposeContract(contract);
-    }
-    _lazyPut.clear();
-    _contracts.clear();
-    if(_resumed) {
-      _resumed = false;
-      onPause();
-    }
-    onDispose();
-    super.dispose();
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_init) {
@@ -132,11 +116,36 @@ abstract class BinderContract extends State<ContractPage> with ContractFragment,
         WidgetsBinding.instance.addObserver(this);
 
         _contractObserverListener(ModalRoute.of(context));
-        ContractObserver.instance.addListener(_contractObserverListener);
+        final observerWidget = context.getElementForInheritedWidgetOfExactType<ContractObserverInheritedWidget>()?.widget;
+        if(ModalRoute.of(context)?.settings.name != null) {
+          if (observerWidget is ContractObserverInheritedWidget) {
+            _observer = observerWidget.observer;
+          } else {
+            _observer = ContractObserver.instance;
+          }
+          _observer?.addListener(_contractObserverListener);
+        }
       }
     } else {
       Navigator.pop(context);
     }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _observer?.removeListener(_contractObserverListener);
+    for (final contract in _contracts.values) {
+      _disposeContract(contract);
+    }
+    _lazyPut.clear();
+    _contracts.clear();
+    if(_resumed) {
+      _resumed = false;
+      onPause();
+    }
+    onDispose();
+    super.dispose();
   }
 
   void lazyPut<T extends Contract>(ContractBinderLazyPut<T> contract) {
