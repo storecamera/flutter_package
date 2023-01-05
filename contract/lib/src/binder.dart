@@ -58,6 +58,7 @@ class ContractPageBinderBuilder extends ContractPage {
 
 abstract class BinderContract extends State<ContractPage> with ContractFragment, WidgetsBindingObserver {
   ContractObserver? _observer;
+  final _BinderChangeNotifier _changeNotifier = _BinderChangeNotifier();
 
   final Map<Type, ContractBinderLazyPut> _lazyPut = {};
   final Map<Type, Contract> _contracts = {};
@@ -257,7 +258,13 @@ abstract class BinderContract extends State<ContractPage> with ContractFragment,
 
   @override
   void update() {
-    setState(() {});
+    _changeNotifier.update();
+  }
+}
+
+class _BinderChangeNotifier extends ChangeNotifier {
+  void update() {
+    notifyListeners();
   }
 }
 

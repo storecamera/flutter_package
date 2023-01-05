@@ -41,7 +41,9 @@ class _ContractElement<T extends ContractFragment> extends StatelessElement {
   }
 
   void _initContract(T contract) {
-    if (contract is Contract) {
+    if (contract is BinderContract) {
+      contract._changeNotifier.addListener(markNeedsBuild);
+    } else if (contract is Contract) {
       contract.addListener(markNeedsBuild);
       contract._attachView(this);
     } else if (contract is Service) {
@@ -50,7 +52,9 @@ class _ContractElement<T extends ContractFragment> extends StatelessElement {
   }
 
   void _disposeContract(T contract) {
-    if (contract is Contract) {
+    if (contract is BinderContract) {
+      contract._changeNotifier.removeListener(markNeedsBuild);
+    } else if (contract is Contract) {
       contract.removeListener(markNeedsBuild);
       contract._detachView(this);
     } else if (contract is Service) {
