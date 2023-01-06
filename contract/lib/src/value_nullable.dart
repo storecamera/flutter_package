@@ -1,7 +1,10 @@
 part of 'value.dart';
 
 class ValueN<T> extends _Value<T> {
-  ValueN({T? value, Object? error}) : super._(value: value, error: error);
+  ValueN({Object? error}) : super._(value: null, error: error);
+
+  ValueN.value({required T? value, Object? error})
+      : super._(value: value, error: error, state: ContractValueState.active);
 
   T? get value => _value;
 

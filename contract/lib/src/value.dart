@@ -20,12 +20,13 @@ class _Value<T> extends ChangeNotifier {
   Object? _error;
   final subscriptions = <ContractValueSubscription>[];
 
-  _Value._({T? value, Object? error})
+  _Value._({T? value, Object? error, ContractValueState? state})
       : _value = value,
         _error = error,
-        _state = value != null
-            ? ContractValueState.active
-            : ContractValueState.waiting;
+        _state = state ??
+            (value != null
+                ? ContractValueState.active
+                : ContractValueState.waiting);
 
   ContractValueState get state => _state;
 

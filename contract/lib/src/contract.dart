@@ -114,8 +114,11 @@ class Contract extends ChangeNotifier with ContractFragment {
   static Value<T> value<T>({T? value, Object? error}) =>
       Value<T>(value: value, error: error);
 
-  static ValueN<T> valueN<T>({T? value, Object? error}) =>
-      ValueN<T>(value: value, error: error);
+  static ValueN<T> valueN<T>({Object? error}) =>
+      ValueN<T>(error: error);
+
+  static ValueN<T> valueNInit<T>({T? value, Object? error}) =>
+      ValueN<T>.value(value: value, error: error);
 
   bool _init = false;
   bool _disposed = false;
