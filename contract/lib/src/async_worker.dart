@@ -107,6 +107,12 @@ mixin AsyncWorker on ContractFragment {
   }
 }
 
+class AsyncWorkerController with ContractFragment, AsyncWorker {
+  @override
+  @Deprecated('The update method does not work in AsyncWorkerController')
+  void update() {}
+}
+
 enum _AsyncWorkerLoadingState { init, lock, loading, hiding }
 
 class AsyncWorkerTheme {

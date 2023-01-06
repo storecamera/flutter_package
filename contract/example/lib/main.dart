@@ -31,7 +31,7 @@ void main() async {
               settings: settings);
         case '/person':
           return MaterialPageRoute(
-              builder: (context) => ContractPageBinderBuilder(
+              builder: (context) => ContractBinderPageBuilder(
                     binder: (BuildContext context, BinderContract binder,
                         dynamic arguments) {
                       if (arguments is Map) {

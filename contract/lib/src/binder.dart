@@ -37,26 +37,50 @@ class ContractPageBuilder extends ContractPage {
   BinderContract createBinder() => binder();
 }
 
-typedef ContractPageInitBinder = void Function(BuildContext context, BinderContract binder, dynamic arguments);
+typedef ContractPageInitBinder = void Function(
+    BuildContext context, BinderContract binder, dynamic arguments);
 
-class ContractPageBinderBuilder extends ContractPage {
+abstract class ContractBinderPage extends ContractPage {
+  const ContractBinderPage({
+    super.key,
+    super.arguments,
+  });
+
+  void bind(BuildContext context, BinderContract binder, dynamic arguments);
+
+  @override
+  DefaultBinderContract createBinder() =>
+      DefaultBinderContract(initBinder: bind);
+
+  T? getArgumentsByType<T>(dynamic arg) {
+    final arguments = arg;
+    if (arguments is T) {
+      return arguments;
+    }
+    return null;
+  }
+}
+
+class ContractBinderPageBuilder extends ContractBinderPage {
   final ContractPageInitBinder binder;
   final WidgetBuilder builder;
 
-  const ContractPageBinderBuilder(
+  const ContractBinderPageBuilder(
       {super.key,
       super.arguments,
       required this.binder,
       required this.builder});
 
   @override
-  Widget build(BuildContext context) => builder(context);
+  void bind(BuildContext context, BinderContract binder, dynamic arguments) =>
+      this.binder(context, binder, arguments);
 
   @override
-  DefaultBinderContract createBinder() => DefaultBinderContract(initBinder: binder);
+  Widget build(BuildContext context) => builder(context);
 }
 
-abstract class BinderContract extends State<ContractPage> with ContractFragment, WidgetsBindingObserver {
+abstract class BinderContract extends State<ContractPage>
+    with ContractFragment, WidgetsBindingObserver {
   ContractObserver? _observer;
   final _BinderChangeNotifier _changeNotifier = _BinderChangeNotifier();
 
@@ -73,7 +97,7 @@ abstract class BinderContract extends State<ContractPage> with ContractFragment,
 
   T? getArgumentsByType<T>() {
     final arguments = this.arguments;
-    if(arguments is T) {
+    if (arguments is T) {
       return arguments;
     }
     return null;
@@ -117,8 +141,11 @@ abstract class BinderContract extends State<ContractPage> with ContractFragment,
         WidgetsBinding.instance.addObserver(this);
 
         _contractObserverListener(ModalRoute.of(context));
-        final observerWidget = context.getElementForInheritedWidgetOfExactType<ContractObserverInheritedWidget>()?.widget;
-        if(ModalRoute.of(context)?.settings.name != null) {
+        final observerWidget = context
+            .getElementForInheritedWidgetOfExactType<
+                ContractObserverInheritedWidget>()
+            ?.widget;
+        if (ModalRoute.of(context)?.settings.name != null) {
           if (observerWidget is ContractObserverInheritedWidget) {
             _observer = observerWidget.observer;
           } else {
@@ -141,7 +168,7 @@ abstract class BinderContract extends State<ContractPage> with ContractFragment,
     }
     _lazyPut.clear();
     _contracts.clear();
-    if(_resumed) {
+    if (_resumed) {
       _resumed = false;
       onPause();
     }
@@ -246,9 +273,9 @@ abstract class BinderContract extends State<ContractPage> with ContractFragment,
 
   void _didChangedLifecycle() {
     final resumed = _isCurrent && _appLifecycle;
-    if(_resumed != resumed) {
+    if (_resumed != resumed) {
       _resumed = resumed;
-      if(_resumed) {
+      if (_resumed) {
         onResume();
       } else {
         onPause();
@@ -274,10 +301,22 @@ class DefaultBinderContract extends BinderContract {
   DefaultBinderContract({required this.initBinder});
 
   @override
+  // ignore: must_call_super
   void onInit() {
-    super.onInit();
     initBinder(context, this, arguments);
   }
+
+  @override
+  // ignore: must_call_super
+  void onDispose() {}
+
+  @override
+  // ignore: must_call_super
+  void onResume() {}
+
+  @override
+  // ignore: must_call_super
+  void onPause() {}
 }
 
 class _ContractBinderInheritedWidget extends InheritedWidget {
