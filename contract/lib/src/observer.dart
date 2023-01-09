@@ -15,6 +15,9 @@ class ContractObserver extends RouteObserver<ModalRoute<dynamic>> {
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
     super.didPush(route, previousRoute);
+    if(route.settings.name == null) {
+      return;
+    }
     this.route = route;
     _changeRoute();
   }
@@ -22,6 +25,9 @@ class ContractObserver extends RouteObserver<ModalRoute<dynamic>> {
   @override
   void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
     super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+    if(newRoute?.settings.name == null) {
+      return;
+    }
     route = newRoute;
     _changeRoute();
   }
@@ -29,6 +35,9 @@ class ContractObserver extends RouteObserver<ModalRoute<dynamic>> {
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     super.didPop(route, previousRoute);
+    if(previousRoute?.settings.name == null) {
+      return;
+    }
     this.route = previousRoute;
     _changeRoute();
   }
@@ -44,4 +53,39 @@ class ContractObserver extends RouteObserver<ModalRoute<dynamic>> {
 
   void removeListener(ContractObserverListener listener) =>
       _listener.remove(listener);
+}
+
+typedef ContractObserverWidgetBuilder = Widget Function(
+    BuildContext context, ContractObserver observer);
+
+class ContractObserverBuilder extends StatefulWidget {
+  final ContractObserverWidgetBuilder builder;
+
+  const ContractObserverBuilder({super.key, required this.builder});
+
+  @override
+  State<ContractObserverBuilder> createState() =>
+      _ContractObserverBuilderState();
+}
+
+class _ContractObserverBuilderState extends State<ContractObserverBuilder> {
+  final ContractObserver observer = ContractObserver._();
+
+  @override
+  Widget build(BuildContext context) {
+    return ContractObserverInheritedWidget(
+      observer: observer,
+      child: widget.builder(context, observer),
+    );
+  }
+}
+
+class ContractObserverInheritedWidget extends InheritedWidget {
+  final ContractObserver observer;
+
+  const ContractObserverInheritedWidget(
+      {super.key, required this.observer, required super.child});
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
 }
