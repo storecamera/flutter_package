@@ -63,8 +63,14 @@ mixin AsyncWorker on ContractFragment {
     showLoading();
     try {
       final T result = await worker();
+      if(isDisposed) {
+        return;
+      }
       onData?.call(result);
     } catch (e) {
+      if(isDisposed) {
+        return;
+      }
       final Object? error;
       if(onError != null) {
         error = onError(e);
@@ -83,7 +89,9 @@ mixin AsyncWorker on ContractFragment {
         }
       }
     } finally {
-      hideLoading();
+      if(!isDisposed) {
+        hideLoading();
+      }
     }
   }
 

@@ -12,6 +12,14 @@ class HomeCountContract extends Contract {
     _counter++;
     update();
   }
+
+  @override
+  void onResume() {
+    super.onResume();
+
+    final homeBinder = Contract.of(context);
+    print('KKH $homeBinder');
+  }
 }
 
 class HomeCountView extends ContractWidget<HomeCountContract> {

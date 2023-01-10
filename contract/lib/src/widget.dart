@@ -1,65 +1,71 @@
 part of 'contract.dart';
 
 abstract class ContractWidget<T extends ContractFragment>
-    extends StatelessWidget {
-  late final T contract;
-
+    extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables
   ContractWidget({super.key});
 
+  late final T contract;
+
+  Widget build(BuildContext context);
+
   @override
-  StatelessElement createElement() => _ContractElement<T>(this);
+  State<ContractWidget<T>> createState() => _ContractWidgetState<T>();
 }
 
-class _ContractElement<T extends ContractFragment> extends StatelessElement {
-  _ContractElement(ContractWidget<T> widget) : super(widget);
+class _ContractWidgetState<T extends ContractFragment> extends State<ContractWidget<T>> {
 
   @override
-  ContractWidget<T> get widget => super.widget as ContractWidget<T>;
-
-  @override
-  void mount(Element? parent, Object? newSlot) {
-    if (parent != null) {
-      try {
-        widget.contract = Contract.of<T>(parent);
-      } catch(_) {}
-      _initContract(widget.contract);
-    }
-    super.mount(parent, newSlot);
+  void initState() {
+    super.initState();
+    try {
+      widget.contract = Contract.of<T>(context);
+    } catch (_) {}
+    _initContract(widget.contract);
   }
 
   @override
-  void unmount() {
+  void dispose() {
     _disposeContract(widget.contract);
-    super.unmount();
+    super.dispose();
   }
 
   @override
-  void update(covariant StatelessWidget newWidget) {
-    (newWidget as ContractWidget<T>).contract = widget.contract;
-    super.update(newWidget);
+  void didUpdateWidget(covariant ContractWidget<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    widget.contract = oldWidget.contract;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.build(context);
   }
 
   void _initContract(T contract) {
     if (contract is BinderContract) {
-      contract._changeNotifier.addListener(markNeedsBuild);
+      contract._changeNotifier.addListener(_markNeedsBuild);
     } else if (contract is Contract) {
-      contract.addListener(markNeedsBuild);
-      contract._attachView(this);
+      contract.addListener(_markNeedsBuild);
+      contract._attachView(context);
     } else if (contract is Service) {
-      contract.addListener(markNeedsBuild);
+      contract.addListener(_markNeedsBuild);
     }
   }
 
   void _disposeContract(T contract) {
     if (contract is BinderContract) {
-      contract._changeNotifier.removeListener(markNeedsBuild);
+      contract._changeNotifier.removeListener(_markNeedsBuild);
     } else if (contract is Contract) {
-      contract.removeListener(markNeedsBuild);
-      contract._detachView(this);
+      contract.removeListener(_markNeedsBuild);
+      contract._detachView(context);
     } else if (contract is Service) {
-      contract.removeListener(markNeedsBuild);
+      contract.removeListener(_markNeedsBuild);
     }
+  }
+
+  void _markNeedsBuild() {
+    setState(() {});
   }
 }
 
