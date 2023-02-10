@@ -11,8 +11,8 @@ class ResponsiveTheme {
 
   ResponsiveTheme._();
 
-  double _mobile = 650;
-  double _tablet = 1100;
+  double _mobile = 600;
+  double _tablet = 840;
 
   void setMobileConstraint(double value) => _mobile = value;
 
