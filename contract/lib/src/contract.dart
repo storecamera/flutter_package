@@ -124,8 +124,9 @@ class Contract extends ChangeNotifier with ContractFragment {
   bool _disposed = false;
   bool _resumed = false;
 
-  bool _isAttachContract = false; // ignore: prefer_final_fields
-  bool get isAttachContract => _isAttachContract;
+  BuildContext? _isAttachContractContext;
+
+  bool get isAttachContract => _isAttachContractContext != null;
 
   final List<BuildContext> _widgetContexts = [];
 
@@ -172,6 +173,9 @@ class Contract extends ChangeNotifier with ContractFragment {
   BuildContext get context {
     if (_widgetContexts.isNotEmpty) {
       return _widgetContexts.last;
+    }
+    if (_isAttachContractContext != null) {
+      return _isAttachContractContext!;
     }
     throw ContractExceptionContext(runtimeType);
   }

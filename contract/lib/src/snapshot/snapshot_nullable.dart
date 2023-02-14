@@ -1,7 +1,6 @@
 part of 'snapshot.dart';
 
-class SnapshotN<T> extends _Snapshot<T> {
-  StreamController<T?>? _streamController;
+class SnapshotN<T> extends _Snapshot<T> with _SnapshotStream<T?> {
 
   SnapshotN() : super._();
 
@@ -18,7 +17,7 @@ class SnapshotN<T> extends _Snapshot<T> {
     _value = value;
     _error = null;
     _state = SnapshotState.active;
-    _streamController?.add(value);
+    _addToSnapshotStream(value);
     notifyListeners();
   }
 
@@ -32,36 +31,39 @@ class SnapshotN<T> extends _Snapshot<T> {
           'error is not set because SnapshotState is disposed');
     }
     _error = error;
-    _streamController?.addError(error);
+    _addErrorToSnapshotStream(error);
     notifyListeners();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _streamController?.close();
+    _disposeToSnapshotStream();
   }
 
   Stream<T?> asStream() {
-    _streamController ??= StreamController<T>.broadcast(
+    late final StreamController<T?> controller;
+    controller = StreamController<T?>.broadcast(
       onListen: () {
+        _streamControllers.add(controller);
         final error = _error;
         if (error != null) {
-          _streamController?.addError(error);
+          controller.addError(error);
           return;
         }
+        final value = _value;
         if (isActive) {
-          _streamController?.add(_value);
+          controller.add(value);
         }
       },
       onCancel: () {
-        _streamController?.close();
-        _streamController = null;
+        controller.close();
+        _streamControllers.remove(controller);
       },
       sync: true,
     );
 
-    return _streamController!.stream;
+    return controller.stream;
   }
 }
 

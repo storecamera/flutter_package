@@ -134,7 +134,7 @@ abstract class BinderContract extends State<ContractPage>
       if (!_initPageState) {
         _initPageState = true;
         for (final contract in _contracts.values) {
-          contract._attachContract();
+          contract._attachContract(context);
         }
         _didChangeAppLifecycle(WidgetsBinding.instance.lifecycleState ==
             AppLifecycleState.resumed);
@@ -221,7 +221,7 @@ abstract class BinderContract extends State<ContractPage>
   }
 
   void _initContract(Contract contract) {
-    contract._attachContract();
+    contract._attachContract(context);
     if (_isCurrent) {
       contract._resumePage();
     }
@@ -330,16 +330,16 @@ class _ContractBinderInheritedWidget extends InheritedWidget {
 }
 
 extension _ContractLifecycleExtension on Contract {
-  void _attachContract() {
-    if (!_isAttachContract) {
-      _isAttachContract = true;
+  void _attachContract(BuildContext context) {
+    if (!isAttachContract) {
+      _isAttachContractContext = context;
       didChangeLifeCycle();
     }
   }
 
   void _detachContract() {
-    if (_isAttachContract) {
-      _isAttachContract = false;
+    if (isAttachContract) {
+      _isAttachContractContext = null;
       didChangeLifeCycle();
     }
   }

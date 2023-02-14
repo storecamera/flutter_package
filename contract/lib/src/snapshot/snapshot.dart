@@ -45,10 +45,14 @@ abstract class _Snapshot<T> extends ChangeNotifier {
   }
 }
 
-class Snapshot<T> extends _Snapshot<T> {
-  StreamController<T>? _streamController;
-
+class Snapshot<T> extends _Snapshot<T> with _SnapshotStream<T> {
   Snapshot([T? value]) : super._(value: value);
+
+  static Snapshot<T> notnull<T>([T? value]) => Snapshot<T>(value);
+
+  static SnapshotN<T> nullable<T>() => SnapshotN();
+
+  static SnapshotN<T> nullableAndInit<T>([T? value]) => SnapshotN.active(value);
 
   T get value {
     if (_value != null) {
@@ -67,7 +71,7 @@ class Snapshot<T> extends _Snapshot<T> {
     _value = value;
     _error = null;
     _state = SnapshotState.active;
-    _streamController?.add(value);
+    _addToSnapshotStream(value);
     notifyListeners();
   }
 
@@ -81,37 +85,68 @@ class Snapshot<T> extends _Snapshot<T> {
           'error is not set because SnapshotState is disposed');
     }
     _error = error;
-    _streamController?.addError(error);
+    _addErrorToSnapshotStream(error);
     notifyListeners();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _streamController?.close();
+    _disposeToSnapshotStream();
   }
 
   Stream<T> asStream() {
-    _streamController ??= StreamController<T>.broadcast(
+    late final StreamController<T> controller;
+    controller = StreamController<T>.broadcast(
       onListen: () {
+        _streamControllers.add(controller);
         final error = _error;
         if (error != null) {
-          _streamController?.addError(error);
+          controller.addError(error);
           return;
         }
         final value = _value;
-        if (value != null) {
-          _streamController?.add(value);
+        if (isActive && value != null) {
+          controller.add(value);
         }
       },
       onCancel: () {
-        _streamController?.close();
-        _streamController = null;
+        controller.close();
+        _streamControllers.remove(controller);
       },
       sync: true,
     );
 
-    return _streamController!.stream;
+    return controller.stream;
+  }
+}
+
+mixin _SnapshotStream<T> {
+  final Set<StreamController<T>> _streamControllers = {};
+
+  void _addToSnapshotStream(T value) {
+    for (final controller in _streamControllers) {
+      if (controller.hasListener && !controller.isClosed) {
+        controller.add(value);
+      }
+    }
+  }
+
+  void _addErrorToSnapshotStream(Object error) {
+    for (final controller in _streamControllers) {
+      if (controller.hasListener && !controller.isClosed) {
+        controller.addError(error);
+      }
+    }
+  }
+
+  void _disposeToSnapshotStream() {
+    for (final controller in _streamControllers) {
+      if (!controller.isClosed) {
+        controller.close();
+      }
+    }
+    _streamControllers.clear();
   }
 }
 
