@@ -20,7 +20,6 @@ class ResponsiveTheme {
 }
 
 class ResponsiveHelper {
-
   static double get mobileWidth => ResponsiveTheme.instance._mobile;
 
   static double get tabletWidth => ResponsiveTheme.instance._tablet;
@@ -30,7 +29,8 @@ class ResponsiveHelper {
   static bool isMobileOf(BuildContext context) =>
       isMobile(MediaQuery.of(context).size.width);
 
-  static bool isTablet(double width) => width < tabletWidth && width >= mobileWidth;
+  static bool isTablet(double width) =>
+      width < tabletWidth && width >= mobileWidth;
 
   static bool isTabletOf(BuildContext context) =>
       isTablet(MediaQuery.of(context).size.width);
@@ -74,12 +74,15 @@ class ResponsiveHelper {
 
 typedef ResponsiveLayoutWidgetBuilder = Widget Function(
     BuildContext context, ResponsiveDevice device, BoxConstraints constraints);
+typedef ResponsiveLayoutDeviceByWidth = ResponsiveDevice Function(double width);
 
 class ResponsiveLayoutBuilder extends StatelessWidget {
   final ResponsiveLayoutWidgetBuilder builder;
+  final ResponsiveLayoutDeviceByWidth deviceByWidth;
 
   const ResponsiveLayoutBuilder({
     Key? key,
+    this.deviceByWidth = ResponsiveHelper.device,
     required this.builder,
   }) : super(key: key);
 
@@ -87,8 +90,8 @@ class ResponsiveLayoutBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return builder(context, ResponsiveHelper.device(constraints.maxWidth),
-            constraints);
+        return builder(
+            context, deviceByWidth(constraints.maxWidth), constraints);
       },
     );
   }
@@ -123,7 +126,9 @@ class MaxWidthLayout extends StatelessWidget {
 
         if (maxWidth < constraints.maxWidth) {
           width = maxWidth;
-          horizontal = minHorizontal > (constraints.maxWidth - maxWidth) / 2 ? minHorizontal : (constraints.maxWidth - maxWidth) / 2;
+          horizontal = minHorizontal > (constraints.maxWidth - maxWidth) / 2
+              ? minHorizontal
+              : (constraints.maxWidth - maxWidth) / 2;
         } else {
           width = constraints.maxWidth;
           horizontal = minHorizontal;
