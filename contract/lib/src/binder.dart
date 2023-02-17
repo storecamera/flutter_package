@@ -7,8 +7,6 @@ abstract class ContractPage extends StatefulWidget {
 
   const ContractPage({Key? key, this.arguments}) : super(key: key);
 
-  @protected
-  @factory
   BinderContract createBinder();
 
   Widget build(BuildContext context);

@@ -136,14 +136,11 @@ class Contract extends ChangeNotifier with ContractFragment {
   bool _appLifecycleState = false; // ignore: prefer_final_fields
 
   @override
-  @protected
-  @mustCallSuper
   void dispose() {
     onDispose();
     super.dispose();
   }
 
-  @mustCallSuper
   void didChangeLifeCycle() {
     if (isAttachContract) {
       if (!_init) {

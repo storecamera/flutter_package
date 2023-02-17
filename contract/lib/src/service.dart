@@ -22,8 +22,6 @@ class Service extends ChangeNotifier with ContractFragment {
   static void disposeService() => _Services.instance.dispose();
 
   @override
-  @protected
-  @mustCallSuper
   void dispose() {
     onDispose();
     super.dispose();
