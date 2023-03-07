@@ -171,7 +171,7 @@ class _Toast {
         );
       });
 
-      Overlay.of(context)?.insert(_overlayEntry!);
+      Overlay.of(context).insert(_overlayEntry!);
     }
   }
 

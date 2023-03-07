@@ -39,7 +39,7 @@ class HomeCountView extends ContractWidget<HomeCountContract> {
           const SizedBox(height: 16,),
           Text(
             '${contract.counter}',
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
         ],
       ),

@@ -1,4 +1,4 @@
-import 'package:contract/src/log.dart';
+import 'package:contract/log.dart';
 
 mixin ContractFragment {
 

@@ -62,7 +62,7 @@ class HomeNavCounterWidget extends ContractWidget<HomeNavContract> {
         const SizedBox(height: 16,),
         Text(
           '${contract.counter}',
-          style: Theme.of(context).textTheme.headline4,
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
       ],
     );
@@ -107,7 +107,7 @@ class Nav1Widget extends ContractWidget<Nav1Binder> {
         const SizedBox(height: 16,),
         Text(
           '${contract.counter}',
-          style: Theme.of(context).textTheme.headline4,
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 16,),
         ElevatedButton(onPressed: () {
@@ -149,7 +149,7 @@ class Nav2Widget extends ContractWidget<Nav2Contract> {
         const SizedBox(height: 16,),
         Text(
           '${contract.counter}',
-          style: Theme.of(context).textTheme.headline4,
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 16,),
         ElevatedButton(onPressed: () {
