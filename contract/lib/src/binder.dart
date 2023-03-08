@@ -78,7 +78,7 @@ class ContractBinderPageBuilder extends ContractBinderPage {
 }
 
 abstract class BinderContract extends State<ContractPage>
-    with ContractFragment, WidgetsBindingObserver {
+    with ContractFragment, ContractContext, WidgetsBindingObserver {
   ContractObserver? _observer;
   final _BinderChangeNotifier _changeNotifier = _BinderChangeNotifier();
 
@@ -281,9 +281,18 @@ abstract class BinderContract extends State<ContractPage>
     }
   }
 
-  @override
   void update() {
     _changeNotifier.update();
+  }
+
+  @override
+  BuildContext? get contractContext {
+    try {
+      if (mounted) {
+        return context;
+      }
+    } catch (_) {}
+    return null;
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:contract/log.dart';
+import 'package:flutter/cupertino.dart';
 
 mixin ContractFragment {
 
@@ -17,6 +18,8 @@ mixin ContractFragment {
   void onPause() {
     Log.i('[Contract:onPause] $runtimeType');
   }
+}
 
-  void update();
+mixin ContractContext {
+  BuildContext? get contractContext;
 }

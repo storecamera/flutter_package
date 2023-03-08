@@ -11,7 +11,7 @@ part 'service.dart';
 
 part 'widget.dart';
 
-class Contract extends ChangeNotifier with ContractFragment {
+class Contract extends ChangeNotifier with ContractFragment, ContractContext {
   static BinderContract _binder(BuildContext context) {
     if (context is StatefulElement && context.state is BinderContract) {
       return context.state as BinderContract;
@@ -177,8 +177,18 @@ class Contract extends ChangeNotifier with ContractFragment {
     throw ContractExceptionContext(runtimeType);
   }
 
-  @override
   void update() {
     notifyListeners();
+  }
+
+  @override
+  BuildContext? get contractContext {
+    if (_widgetContexts.isNotEmpty) {
+      return _widgetContexts.last;
+    }
+    if (_isAttachContractContext != null) {
+      return _isAttachContractContext!;
+    }
+    return null;
   }
 }

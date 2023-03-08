@@ -27,7 +27,6 @@ class Service extends ChangeNotifier with ContractFragment {
     super.dispose();
   }
 
-  @override
   void update() {
     notifyListeners();
   }

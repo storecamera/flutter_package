@@ -2,27 +2,25 @@ import 'dart:async';
 
 import 'package:contract/src/exceptions.dart';
 import 'package:contract/src/fragment.dart';
-import 'package:contract/src/value.dart';
+import 'package:contract/src/snapshot/snapshot.dart';
 import 'package:flutter/material.dart';
 
-typedef AsyncWorkerError = void Function(BuildContext context, Object e);
-typedef AsyncWorkerWidgetBuilder = Widget Function(
+typedef AsyncWorkerLoadingBuilder = Widget Function(
     BuildContext context, bool loading);
+typedef AsyncWorkerErrorBuilder = void Function(BuildContext context, Object e);
 
-mixin AsyncWorker on ContractFragment {
+mixin AsyncWorker on ContractFragment, ContractContext {
   bool _isDisposed = false;
 
   bool get isDisposed => _isDisposed;
 
   final List<StreamSubscription<dynamic>> _subscriptionsList = [];
 
-  final _state = Value(value: false);
+  final _state = Snapshot.notnull(false);
   int _workerCount = 0;
 
-  final List<BuildContext Function()> _widgetContexts = [];
-
   void showLoading() {
-    if(isDisposed) {
+    if (isDisposed) {
       throw ContractExceptionAsyncWorkerDisposed(runtimeType, 'showLoading');
     }
     _workerCount++;
@@ -30,7 +28,7 @@ mixin AsyncWorker on ContractFragment {
   }
 
   void hideLoading() {
-    if(isDisposed) {
+    if (isDisposed) {
       throw ContractExceptionAsyncWorkerDisposed(runtimeType, 'hideLoading');
     }
     _workerCount--;
@@ -55,41 +53,47 @@ mixin AsyncWorker on ContractFragment {
   }
 
   void asyncWorker<T>(Future<T> Function() worker,
-      {void Function(T data)? onData, Object? Function(Object e)? onError}) async {
-    if(isDisposed) {
+      {void Function(T data)? onData,
+      Object? Function(Object e)? onError}) async {
+    if (isDisposed) {
       throw ContractExceptionAsyncWorkerDisposed(runtimeType, 'asyncWorker');
     }
 
     showLoading();
     try {
       final T result = await worker();
-      if(isDisposed) {
+      if (isDisposed) {
         return;
       }
       onData?.call(result);
     } catch (e) {
-      if(isDisposed) {
+      if (isDisposed) {
         return;
       }
-      final Object? error;
-      if(onError != null) {
-        error = onError(e);
-      } else {
-        error = e;
-      }
-
-      if (error != null) {
-        final errorFunc = AsyncWorkerTheme.instance.error;
-        if (errorFunc != null) {
-          final context =
-              _widgetContexts.isNotEmpty ? _widgetContexts.last() : null;
-          if (context != null) {
-            errorFunc(context, error);
-          }
+      try {
+        final Object? error;
+        if (onError != null) {
+          error = onError(e);
+        } else {
+          error = e;
         }
-      }
+
+        if (error == null) {
+          return;
+        }
+
+        final context = contractContext;
+        if (context == null) {
+          return;
+        }
+
+        Theme.of(context)
+            .extension<AsyncWorkerStyle>()
+            ?.errorBuilder
+            ?.call(context, error);
+      } catch (_) {}
     } finally {
-      if(!isDisposed) {
+      if (!isDisposed) {
         hideLoading();
       }
     }
@@ -115,46 +119,76 @@ mixin AsyncWorker on ContractFragment {
   }
 }
 
-class AsyncWorkerController with ContractFragment, AsyncWorker {
+typedef AsyncWorkerControllerContext = BuildContext? Function();
+
+class AsyncWorkerController
+    with ContractFragment, ContractContext, AsyncWorker {
+  final AsyncWorkerControllerContext? asyncWorkerControllerContext;
+
+  AsyncWorkerController({required this.asyncWorkerControllerContext});
+
+  void dispose() {
+    onDispose();
+  }
+
   @override
-  @Deprecated('The update method does not work in AsyncWorkerController')
-  void update() {}
+  BuildContext? get contractContext => asyncWorkerControllerContext?.call();
 }
 
 enum _AsyncWorkerLoadingState { init, lock, loading, hiding }
 
-class AsyncWorkerTheme {
-  static final AsyncWorkerTheme instance = AsyncWorkerTheme._();
+class AsyncWorkerStyle extends ThemeExtension<AsyncWorkerStyle> {
+  static const int defaultShowDelayMs = 100;
+  static const int defaultHideDelayMs = 30;
 
-  factory AsyncWorkerTheme() => instance;
-
-  AsyncWorkerTheme._();
-
-  int showDelayMs = 100;
-  int hideDelayMs = 30;
-
-  AsyncWorkerWidgetBuilder builder = (context, loading) => Center(
+  static Widget defaultLoadingBuilder(context, loading) => Center(
         child: CircularProgressIndicator(
           color: Theme.of(context).colorScheme.primary,
         ),
       );
 
-  AsyncWorkerError? error;
+  const AsyncWorkerStyle(
+      {this.showDelayMs,
+      this.hideDelayMs,
+      this.loadingBuilder,
+      this.errorBuilder});
+
+  final int? showDelayMs;
+  final int? hideDelayMs;
+
+  final AsyncWorkerLoadingBuilder? loadingBuilder;
+  final AsyncWorkerErrorBuilder? errorBuilder;
+
+  @override
+  ThemeExtension<AsyncWorkerStyle> copyWith({
+    int? showDelayMs,
+    int? hideDelayMs,
+    AsyncWorkerLoadingBuilder? loadingBuilder,
+    AsyncWorkerErrorBuilder? errorBuilder,
+  }) =>
+      AsyncWorkerStyle(
+        showDelayMs: showDelayMs ?? this.showDelayMs,
+        hideDelayMs: hideDelayMs ?? this.hideDelayMs,
+        loadingBuilder: loadingBuilder ?? this.loadingBuilder,
+        errorBuilder: errorBuilder ?? this.errorBuilder,
+      );
+
+  @override
+  ThemeExtension<AsyncWorkerStyle> lerp(
+      covariant ThemeExtension<AsyncWorkerStyle>? other, double t) {
+    return this;
+  }
 }
 
 class AsyncWorkerWidget extends StatefulWidget {
   final AsyncWorker worker;
-  final int? showDelayMs;
-  final int? hideDelayMs;
-  final AsyncWorkerWidgetBuilder? builder;
+  final AsyncWorkerStyle? style;
   final Widget? child;
 
   const AsyncWorkerWidget({
     super.key,
     required this.worker,
-    this.showDelayMs,
-    this.hideDelayMs,
-    this.builder,
+    this.style,
     this.child,
   });
 
@@ -163,57 +197,48 @@ class AsyncWorkerWidget extends StatefulWidget {
 }
 
 class _AsyncWorkerWidgetState extends State<AsyncWorkerWidget> {
-
   late _AsyncWorkerLoadingState state;
   Object? _asyncIdentity;
 
-  int get showDelayMs {
-    final showDelayMs = widget.showDelayMs ?? AsyncWorkerTheme.instance.showDelayMs;
-    if(showDelayMs < 0) {
+  int _getShowDelayMs(BuildContext context) {
+    final showDelayMs = widget.style?.showDelayMs ??
+        Theme.of(context).extension<AsyncWorkerStyle>()?.showDelayMs ??
+        AsyncWorkerStyle.defaultShowDelayMs;
+    if (showDelayMs < 0) {
       return 0;
     }
     return showDelayMs;
   }
 
-  int get hideDelayMs {
-    final hideDelayMs = widget.hideDelayMs ?? AsyncWorkerTheme.instance.hideDelayMs;
-    if(hideDelayMs < 0) {
+  int _getHideDelayMs(BuildContext context) {
+    final hideDelayMs = widget.style?.hideDelayMs ??
+        Theme.of(context).extension<AsyncWorkerStyle>()?.hideDelayMs ??
+        AsyncWorkerStyle.defaultHideDelayMs;
+    if (hideDelayMs < 0) {
       return 0;
     }
     return hideDelayMs;
   }
 
+  AsyncWorkerLoadingBuilder _getLoadingBuilder(BuildContext context) =>
+      widget.style?.loadingBuilder ??
+      Theme.of(context).extension<AsyncWorkerStyle>()?.loadingBuilder ??
+      AsyncWorkerStyle.defaultLoadingBuilder;
+
   @override
   void initState() {
     super.initState();
 
-    final state = widget.worker._state.value;
-    if(state) {
-      if(showDelayMs > 0) {
-        this.state = _AsyncWorkerLoadingState.lock;
-        final Object asyncIdentity = Object();
-        _asyncIdentity = asyncIdentity;
-        Future.delayed(Duration(milliseconds: showDelayMs))
-            .then((data) async {
-          if (mounted && _asyncIdentity == asyncIdentity) {
-            setState(() {
-              this.state = _AsyncWorkerLoadingState.loading;
-            });
-          }
-        });
-      } else {
-        this.state = _AsyncWorkerLoadingState.loading;
-      }
+    if (widget.worker._state.value) {
+      state = _AsyncWorkerLoadingState.loading;
     } else {
-      this.state = _AsyncWorkerLoadingState.init;
+      state = _AsyncWorkerLoadingState.init;
     }
-    widget.worker._widgetContexts.add(_getContext);
     widget.worker._state.addListener(_updateState);
   }
 
   @override
   void dispose() {
-    widget.worker._widgetContexts.remove(_getContext);
     widget.worker._state.removeListener(_updateState);
     super.dispose();
   }
@@ -222,21 +247,24 @@ class _AsyncWorkerWidgetState extends State<AsyncWorkerWidget> {
   void didUpdateWidget(covariant AsyncWorkerWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if(widget.worker != oldWidget.worker) {
-      oldWidget.worker._widgetContexts.remove(_getContext);
+    if (widget.worker != oldWidget.worker) {
       oldWidget.worker._state.removeListener(_updateState);
-      widget.worker._widgetContexts.add(_getContext);
       widget.worker._state.addListener(_updateState);
       _updateState();
     }
   }
 
   void _updateState() {
+    if (!mounted) {
+      return;
+    }
+
     final state = widget.worker._state.value;
-    if(state) {
-      switch(this.state) {
+    if (state) {
+      switch (this.state) {
         case _AsyncWorkerLoadingState.init:
-          if(showDelayMs > 0) {
+          final showDelayMs = _getShowDelayMs(context);
+          if (showDelayMs > 0) {
             this.state = _AsyncWorkerLoadingState.lock;
             final Object asyncIdentity = Object();
             _asyncIdentity = asyncIdentity;
@@ -249,7 +277,7 @@ class _AsyncWorkerWidgetState extends State<AsyncWorkerWidget> {
               }
             });
           } else {
-            if(mounted) {
+            if (mounted) {
               setState(() {
                 this.state = _AsyncWorkerLoadingState.loading;
               });
@@ -265,7 +293,7 @@ class _AsyncWorkerWidgetState extends State<AsyncWorkerWidget> {
           break;
       }
     } else {
-      switch(this.state) {
+      switch (this.state) {
         case _AsyncWorkerLoadingState.init:
           break;
         case _AsyncWorkerLoadingState.lock:
@@ -273,7 +301,8 @@ class _AsyncWorkerWidgetState extends State<AsyncWorkerWidget> {
           _asyncIdentity = null;
           break;
         case _AsyncWorkerLoadingState.loading:
-          if(hideDelayMs > 0) {
+          final hideDelayMs = _getHideDelayMs(context);
+          if (hideDelayMs > 0) {
             this.state = _AsyncWorkerLoadingState.hiding;
             final Object asyncIdentity = Object();
             _asyncIdentity = asyncIdentity;
@@ -286,7 +315,7 @@ class _AsyncWorkerWidgetState extends State<AsyncWorkerWidget> {
               }
             });
           } else {
-            if(mounted) {
+            if (mounted) {
               setState(() {
                 this.state = _AsyncWorkerLoadingState.init;
               });
@@ -299,20 +328,18 @@ class _AsyncWorkerWidgetState extends State<AsyncWorkerWidget> {
     }
   }
 
-  BuildContext _getContext() => context;
-
   @override
   Widget build(BuildContext context) {
     final child = widget.child;
     return Stack(
       children: [
         if (child != null) child,
-        _buildState(),
+        _buildState(context),
       ],
     );
   }
 
-  Widget _buildState() {
+  Widget _buildState(BuildContext context) {
     switch (state) {
       case _AsyncWorkerLoadingState.init:
         return const SizedBox();
@@ -327,15 +354,13 @@ class _AsyncWorkerWidgetState extends State<AsyncWorkerWidget> {
             width: double.infinity,
             height: double.infinity,
             color: const Color(0x00000000),
-            child: (widget.builder ?? AsyncWorkerTheme.instance.builder)
-                .call(context, true));
+            child: _getLoadingBuilder(context)(context, true));
       case _AsyncWorkerLoadingState.hiding:
         return Container(
             width: double.infinity,
             height: double.infinity,
             color: const Color(0x00000000),
-            child: (widget.builder ?? AsyncWorkerTheme.instance.builder)
-                .call(context, false));
+            child: _getLoadingBuilder(context)(context, false));
     }
   }
 }
