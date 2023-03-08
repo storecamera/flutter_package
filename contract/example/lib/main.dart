@@ -20,12 +20,16 @@ void main() async {
     theme: ThemeData(
       extensions: [
         AsyncWorkerStyle(
-          showDelayMs: 1000,
-          hideDelayMs: 200,
+          showDelayMs: 300,
+          hideDelayMs: 100,
           loadingBuilder: (context, loading) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.error,
+            return AnimatedOpacity(
+              duration: const Duration(milliseconds: 100),
+              opacity: loading ? 1 : 0,
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.error,
+                ),
               ),
             );
           }

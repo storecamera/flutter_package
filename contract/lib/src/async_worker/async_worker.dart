@@ -87,10 +87,8 @@ mixin AsyncWorker on ContractFragment, ContractContext {
           return;
         }
 
-        Theme.of(context)
-            .extension<AsyncWorkerStyle>()
-            ?.errorBuilder
-            ?.call(context, error);
+        (Theme.of(context).extension<AsyncWorkerStyle>()?.errorBuilder ??
+            AsyncWorkerStyle.defaultErrorBuilder)(context, error);
       } catch (_) {}
     } finally {
       if (!isDisposed) {
@@ -141,11 +139,27 @@ class AsyncWorkerStyle extends ThemeExtension<AsyncWorkerStyle> {
   static const int defaultShowDelayMs = 100;
   static const int defaultHideDelayMs = 30;
 
-  static Widget defaultLoadingBuilder(context, loading) => Center(
+  static Widget defaultLoadingBuilder(BuildContext context, bool loading) => Center(
         child: CircularProgressIndicator(
           color: Theme.of(context).colorScheme.primary,
         ),
       );
+
+  static void defaultErrorBuilder(BuildContext context, Object e) => showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          icon: const Icon(Icons.error_outline),
+          content: Text(e.toString()),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Ok'))
+          ],
+        );
+      });
 
   const AsyncWorkerStyle(
       {this.showDelayMs,
