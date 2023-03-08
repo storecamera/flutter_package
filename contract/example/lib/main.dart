@@ -17,6 +17,21 @@ void main() async {
     title: 'Contract example',
     debugShowCheckedModeBanner: false,
     navigatorObservers: [ContractObserver.instance],
+    theme: ThemeData(
+      extensions: [
+        AsyncWorkerStyle(
+          showDelayMs: 1000,
+          hideDelayMs: 200,
+          loadingBuilder: (context, loading) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            );
+          }
+        ),
+      ]
+    ),
     initialRoute: '/',
     onGenerateRoute: (RouteSettings settings) {
       switch (settings.name) {
