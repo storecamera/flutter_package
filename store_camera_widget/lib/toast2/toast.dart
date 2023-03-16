@@ -122,8 +122,10 @@ class Toasts {
 
   Toast? _toast;
 
-  Future<void> show(BuildContext context,
-      {ToastStyle? style, required WidgetBuilder builder}) {
+  Future<void> show(
+      {required BuildContext context,
+      ToastStyle? style,
+      required WidgetBuilder builder}) {
     _toast?.hide();
     _toast = Toast(
       style: style,
@@ -142,59 +144,62 @@ class Toasts {
     String? messageText,
     double? titleMessageSpace,
   }) {
-    return _toast!.show(context, (context) {
-      final theme = Theme.of(context).extension<ToastStyle>();
-      final titleStyle = titleTextStyle ??
-          style?.titleTextStyle ??
-          theme?.titleTextStyle ??
-          Theme.of(context).textTheme.titleSmall ??
-          const TextStyle();
-
-      Widget? title;
-      if (titleWidget != null) {
-        title = DefaultTextStyle(style: titleStyle, child: titleWidget);
-      } else if (titleText != null) {
-        title = Text(
-          titleText,
-          style: titleStyle,
-        );
-      }
-
-      Widget? message;
-      if (messageWidget != null) {
-        if (messageTextStyle != null) {
-          message =
-              DefaultTextStyle(style: messageTextStyle, child: messageWidget);
-        } else {
-          message = messageWidget;
-        }
-      } else if (messageText != null) {
-        title = Text(
-          messageText,
-          style: messageTextStyle,
-        );
-      }
-
-      double space = titleMessageSpace ??
-          style?.titleMessageSpace ??
-          theme?.titleMessageSpace ??
-          8;
-      return ToastContainer(
+    return show(
+        context: context,
         style: style,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (title != null) title,
-            if (title != null && message != null)
-              SizedBox(
-                height: space,
-              ),
-            if (message != null) message,
-          ],
-        ),
-      );
-    });
+        builder: (context) {
+          final theme = Theme.of(context).extension<ToastStyle>();
+          final titleStyle = titleTextStyle ??
+              style?.titleTextStyle ??
+              theme?.titleTextStyle ??
+              Theme.of(context).textTheme.titleSmall ??
+              const TextStyle();
+
+          Widget? title;
+          if (titleWidget != null) {
+            title = DefaultTextStyle(style: titleStyle, child: titleWidget);
+          } else if (titleText != null) {
+            title = Text(
+              titleText,
+              style: titleStyle,
+            );
+          }
+
+          Widget? message;
+          if (messageWidget != null) {
+            if (messageTextStyle != null) {
+              message = DefaultTextStyle(
+                  style: messageTextStyle, child: messageWidget);
+            } else {
+              message = messageWidget;
+            }
+          } else if (messageText != null) {
+            title = Text(
+              messageText,
+              style: messageTextStyle,
+            );
+          }
+
+          double space = titleMessageSpace ??
+              style?.titleMessageSpace ??
+              theme?.titleMessageSpace ??
+              8;
+          return ToastContainer(
+            style: style,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (title != null) title,
+                if (title != null && message != null)
+                  SizedBox(
+                    height: space,
+                  ),
+                if (message != null) message,
+              ],
+            ),
+          );
+        });
   }
 }
 
