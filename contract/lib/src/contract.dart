@@ -12,6 +12,9 @@ part 'service.dart';
 part 'widget.dart';
 
 class Contract extends ChangeNotifier with ContractFragment, ContractContext {
+  static BuildContext? get rootContext =>
+      ContractObserver.instance.getBuildContext();
+
   static BinderContract _binder(BuildContext context) {
     if (context is StatefulElement && context.state is BinderContract) {
       return context.state as BinderContract;

@@ -1,6 +1,12 @@
 import 'package:flutter/widgets.dart';
 
-typedef ContractObserverListener = void Function(Route<dynamic>? route);
+// typedef ContractObserverListener = void Function(Route<dynamic>? route);
+
+mixin ContractObserverListener {
+  void contractObserverListener(Route<dynamic>? route);
+
+  BuildContext contractObserverContext();
+}
 
 class ContractObserver extends RouteObserver<ModalRoute<dynamic>> {
   static final ContractObserver _instance = ContractObserver._();
@@ -44,7 +50,7 @@ class ContractObserver extends RouteObserver<ModalRoute<dynamic>> {
 
   void _changeRoute() {
     for (final listener in _listener) {
-      listener(route);
+      listener.contractObserverListener(route);
     }
   }
 
@@ -53,6 +59,13 @@ class ContractObserver extends RouteObserver<ModalRoute<dynamic>> {
 
   void removeListener(ContractObserverListener listener) =>
       _listener.remove(listener);
+
+  BuildContext? getBuildContext() {
+    if(_listener.isNotEmpty) {
+      return _listener.last.contractObserverContext();
+    }
+    return null;
+  }
 }
 
 typedef ContractObserverWidgetBuilder = Widget Function(

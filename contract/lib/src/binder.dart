@@ -78,7 +78,11 @@ class ContractBinderPageBuilder extends ContractBinderPage {
 }
 
 abstract class BinderContract extends State<ContractPage>
-    with ContractFragment, ContractContext, WidgetsBindingObserver {
+    with
+        ContractFragment,
+        ContractContext,
+        ContractObserverListener,
+        WidgetsBindingObserver {
   ContractObserver? _observer;
   final _BinderChangeNotifier _changeNotifier = _BinderChangeNotifier();
 
@@ -138,7 +142,7 @@ abstract class BinderContract extends State<ContractPage>
             AppLifecycleState.resumed);
         WidgetsBinding.instance.addObserver(this);
 
-        _contractObserverListener(ModalRoute.of(context));
+        contractObserverListener(ModalRoute.of(context));
         final observerWidget = context
             .getElementForInheritedWidgetOfExactType<
                 ContractObserverInheritedWidget>()
@@ -149,7 +153,7 @@ abstract class BinderContract extends State<ContractPage>
           } else {
             _observer = ContractObserver.instance;
           }
-          _observer?.addListener(_contractObserverListener);
+          _observer?.addListener(this);
         }
       }
     } else {
@@ -160,7 +164,7 @@ abstract class BinderContract extends State<ContractPage>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _observer?.removeListener(_contractObserverListener);
+    _observer?.removeListener(this);
     for (final contract in _contracts.values) {
       _disposeContract(contract);
     }
@@ -252,23 +256,6 @@ abstract class BinderContract extends State<ContractPage>
     }
   }
 
-  void _contractObserverListener(Route<dynamic>? route) {
-    final isCurrent = route != null
-        ? route.settings == ModalRoute.of(context)?.settings
-        : false;
-    if (isCurrent != _isCurrent) {
-      _isCurrent = isCurrent;
-      _didChangedLifecycle();
-      for (final contract in _contracts.values) {
-        if (isCurrent) {
-          contract._resumePage();
-        } else {
-          contract._pausePage();
-        }
-      }
-    }
-  }
-
   void _didChangedLifecycle() {
     final resumed = _isCurrent && _appLifecycle;
     if (_resumed != resumed) {
@@ -293,6 +280,29 @@ abstract class BinderContract extends State<ContractPage>
       }
     } catch (_) {}
     return null;
+  }
+
+  @override
+  BuildContext contractObserverContext() {
+    return context;
+  }
+
+  @override
+  void contractObserverListener(Route? route) {
+    final isCurrent = route != null
+        ? route.settings == ModalRoute.of(context)?.settings
+        : false;
+    if (isCurrent != _isCurrent) {
+      _isCurrent = isCurrent;
+      _didChangedLifecycle();
+      for (final contract in _contracts.values) {
+        if (isCurrent) {
+          contract._resumePage();
+        } else {
+          contract._pausePage();
+        }
+      }
+    }
   }
 }
 
