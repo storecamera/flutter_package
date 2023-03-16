@@ -16,7 +16,7 @@ class ToastStyle extends ThemeExtension<ToastStyle> {
 
   static const ToastAnimationType defaultAnimationType =
       ToastAnimationType.opacity;
-  static const Duration defaultAnimationDuration = Duration(milliseconds: 300);
+  static const Duration defaultAnimationDuration = Duration(milliseconds: 500);
   static const Curve defaultAnimationCurve = Curves.easeOutBack;
 
   const ToastStyle({
@@ -174,7 +174,7 @@ class Toasts {
               message = messageWidget;
             }
           } else if (messageText != null) {
-            title = Text(
+            message = Text(
               messageText,
               style: messageTextStyle,
             );
@@ -183,7 +183,7 @@ class Toasts {
           double space = titleMessageSpace ??
               style?.titleMessageSpace ??
               theme?.titleMessageSpace ??
-              8;
+              4;
           return ToastContainer(
             style: style,
             child: Column(
@@ -428,11 +428,13 @@ class ToastContainer extends StatelessWidget {
     }
 
     Widget child = Container(
+      width: double.infinity,
       padding: padding,
       decoration: decoration,
       color: decoration == null ? color : null,
       child: this.child,
     );
+
     final useBlur = style?.containerUseBlur ?? theme?.containerUseBlur ?? true;
     if (useBlur) {
       child = BackdropFilter(
