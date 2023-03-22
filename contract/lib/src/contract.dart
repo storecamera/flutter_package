@@ -127,6 +127,8 @@ class Contract extends ChangeNotifier with ContractFragment, ContractContext {
   bool _disposed = false;
   bool _resumed = false;
 
+  bool get resumed => _resumed;
+
   BuildContext? _isAttachContractContext;
 
   bool get isAttachContract => _isAttachContractContext != null;
