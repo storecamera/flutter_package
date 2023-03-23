@@ -58,11 +58,11 @@ class InputDecorationBorderNone extends InputDecoration {
     super.constraints,
   }) : super(
           border: InputBorder.none,
-          enabledBorder: null,
-          focusedBorder: null,
-          disabledBorder: null,
-          errorBorder: null,
-          focusedErrorBorder: null,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          focusedErrorBorder: InputBorder.none,
         );
 }
 
@@ -130,7 +130,7 @@ class InputDecorationOutlineInputBorder extends InputDecoration {
   static OutlineInputBorder? colorToOutlineInputBorder(Color? color, BorderRadius borderRadius) =>
       color != null
           ? OutlineInputBorder(borderSide: BorderSide(color: color), borderRadius: borderRadius)
-          : null;
+          : OutlineInputBorder(borderRadius: borderRadius);
 }
 
 class ReadOnlyTextField extends StatefulWidget {
